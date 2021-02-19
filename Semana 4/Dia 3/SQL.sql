@@ -61,4 +61,20 @@ select producto_id, producto_nombre, producto_precio, producto_cantidad, categor
 select * from t_producto;
 select * from t_categoria;
 
+insert into t_categoria (categoria_nombre) values ('Otros');
+select * from t_categoria;
 # los joins! => inner join, left join, right join, full outer join
+select * from t_producto inner join t_categoria on t_producto.categoria_id = t_categoria.categoria_id;
+
+select * from t_producto right join t_categoria on t_producto.categoria_id = t_categoria.categoria_id;
+
+select * from t_producto left join t_categoria on t_producto.categoria_id = t_categoria.categoria_id;
+
+
+
+
+
+
+
+
+
