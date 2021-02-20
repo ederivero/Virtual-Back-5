@@ -1,10 +1,11 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
+from flask_cors import CORS
 app = Flask(__name__)
 productos = []
 # primero creo la instancia de mi clase API para poder declarar las rutas de mis Resource
 api = Api(app)
-
+CORS(app)
 @app.route('/', methods=['GET', 'POST'])
 def start():
     return 'Bienvenido a mi API'
@@ -117,3 +118,4 @@ class ProductoUnico(Resource):
 api.add_resource(Producto,'/producto','/otro')
 api.add_resource(ProductoUnico, '/producto/<int:id>')
 app.run(debug=True, port=5000)
+# lo que hacemos aca abajo nunca se va a ejecutar
