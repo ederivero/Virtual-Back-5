@@ -1,11 +1,21 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
+# https://flask-cors.readthedocs.io/en/latest/
 from flask_cors import CORS
+
 app = Flask(__name__)
 productos = []
 # primero creo la instancia de mi clase API para poder declarar las rutas de mis Resource
 api = Api(app)
-CORS(app)
+# si yo quiero permitir todos los accesos a todos los metodos y de cualquier dominio y cualquier header
+# para indicar que recursos (resource) pueden ser accedidos se tiene que indicar que endpoint y que origenes pueden ser accedidos
+# https://docs.python.org/3/library/re.html
+CORS(app,
+    # resource captura un diccionario en la llave se debe indicar los endpoints que vamos a declarar seguido de su lista de argumentos en el cual pueden ser los "origins" (origenes), "methods" (metodos), "headers" (cabeceras), defecto: * 
+    #  resources={r"/producto/*":{"origins":"*"}, "/almacen":{"origins":"mipagina.com"}}, 
+    #  origins=['mipagina.com','otrapagina.com'], # sirve para indicar que dominios pueden acceder a mi API, defecto: *
+    #  methods=['POST', 'PUT', 'DELETE', 'GET'], # para indicar que metodos pueden acceder a nuesta API , por defecto el GET siempre va a poder, defecto: *
+     )
 @app.route('/', methods=['GET', 'POST'])
 def start():
     return 'Bienvenido a mi API'
