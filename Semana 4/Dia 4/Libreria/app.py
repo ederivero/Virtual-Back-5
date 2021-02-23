@@ -4,6 +4,7 @@ from models.autor import AutorModel
 from models.categoria import CategoriaModel
 from models.libro import LibroModel
 from models.sede import SedeModel
+from models.sedeLibro import SedeLibroModel
 app = Flask(__name__)
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/#connection-uri-format
 #                                    formato://username:password@host:port/databasename
@@ -15,6 +16,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # inicio la aplicacion proveyendo las credenciales indicadas en el app.config pero aun no se ha conectado a la bd
 bd.init_app(app)
+# con drop all se eliminan todas las tablas MAPEADAS en el proyecto
+bd.drop_all(app=app)
 # recien se conecta a la bd, pero necesita el driver para poder conectarse
 # para conectarnos a una base de datos en mysql deberemos instalar el driver: pip install mysqlclient
 bd.create_all(app=app)

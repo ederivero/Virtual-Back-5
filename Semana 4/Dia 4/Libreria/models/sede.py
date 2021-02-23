@@ -1,5 +1,5 @@
 from config.base_datos import bd
-
+from sqlalchemy.orm import relationship
 
 class SedeModel(bd.Model):
     __tablename__ = "t_sede"
@@ -9,3 +9,4 @@ class SedeModel(bd.Model):
     sedeLatitd = bd.Column(name="sede_latitud", type_=bd.Float(), nullable=False)
     sedeLongitud = bd.Column(name="sede_longitud", type_=bd.Float(), nullable=False)
     
+    libros = relationship('LibroModel', backref='sedeLibro')

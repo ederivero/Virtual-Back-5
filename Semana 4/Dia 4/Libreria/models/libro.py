@@ -1,7 +1,7 @@
 from config.base_datos import bd
 # si queremos usar alguna datatype especifico de una base de datos en particular, debemos de importar el dialecto para que solamente funcione en esa base de datos
 from sqlalchemy.dialects import mysql
-
+from sqlalchemy.orm import relationship
 class LibroModel(bd.Model):
     __tablename__ = "t_libro"
     libroId = bd.Column(name="libro_id", type_=bd.Integer,
@@ -15,3 +15,5 @@ class LibroModel(bd.Model):
                       type_=bd.Integer, nullable=False)
     categoria = bd.Column(bd.ForeignKey('t_categoria.categoria_id'),
                           name="categoria_id", type_=bd.Integer, nullable=False)
+    
+    sedes = relationship('SedeModel', backref='libroSede')

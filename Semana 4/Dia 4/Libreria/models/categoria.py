@@ -1,5 +1,5 @@
 from config.base_datos import bd
-
+from sqlalchemy.orm import relationship
 
 class CategoriaModel(bd.Model):
     __tablename__ = "t_categoria"
@@ -7,3 +7,6 @@ class CategoriaModel(bd.Model):
                             primary_key=True, autoincrement=True, nullable=False, unique=True)
     categoriaDescripcion = bd.Column(
         name="categoria_descripcion", type_=bd.String(45), unique=True, nullable=False)
+    
+    # esto no crea las relaciones simplemente sirve para al momento de hacer consultas con JOIN's
+    libros = relationship('LibroModel', backref='categoriaLibro', lazy=True)

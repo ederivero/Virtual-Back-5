@@ -14,6 +14,16 @@ class AutorModel(bd.Model):
                         unique=True, # si no se va a repetir el valor o no
                         )
     autorNombre = bd.Column(name="autor_nombre", type_=bd.String(45))
+    # si no indicamos un backref flask lo generara alteatoriamente y sera mas complicado averiguar su nombre
+    # el backref sirve para usarse en el modelo hijo (para que nos devuelva los datos del padre)
+    # https://docs.sqlalchemy.org/en/14/orm/relationship_api.html#sqlalchemy.orm.relationship
+    # lazy => define cuando SQLALchemy va a cargar la data de la base de datos
+    # 'select' / True => es el valor por defecto, significa que SQLALchemy cargará los datos segun sea necesario 
+    # 'join'/ False => le dice a SQLALChemy que cargue la relacion en la misma consulta usan un JOIN 
+    # 'subquery' => trabaja como un JOIN pero en su lugar de hacerlo en una misma consulta lo hara en una subconsulta
+    # 'dynamic' => es especial si se tiene muchos elementos y se desea aplicar filtros adicionales. SQLAlchemy devolvera otro objeto de consulta que se puede customizar antes de cargar los elementos de la bd. Al hacer esto tener en cuenta que el proceso de lectura de la bd puede ser mayor y x ende tener un mayor tiempo de espera
+    libros = bd.relationship('LibroModel', backref='autorLibro', lazy= True) # en el caso de fk se apunta al nombre de la tabla, mientras que en los relationship se apunta al nombre del modelo
+    # en el caso de los relationship normal no puede estar creado la tabla aún
 
     def __init__(self, nombreAutor):
         self.autorNombre = nombreAutor
