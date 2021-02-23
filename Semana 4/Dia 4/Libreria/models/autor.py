@@ -28,6 +28,10 @@ class AutorModel(bd.Model):
     def __init__(self, nombreAutor):
         self.autorNombre = nombreAutor
     
+    # el metodo magico __str__ sirve para modificar la forma en que se imprimirá un objeto en consola
+    def __str__(self):
+        return '{}: {}'.format(self.autorId, self.autorNombre)
+
     def save(self):
         # el metodo session devuelve la sesion actual y evita que se cree una nueva sesion y asi relentizar la conexion a mi bd
         # el metodo add sirve para agregar toda mi instancia (mi nuevo autor) a un formato que sea valido para la bd
