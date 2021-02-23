@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from config.base_datos import bd
 # from models.autor import AutorModel
-from controllers.autor import AutoresController
+from controllers.autor import AutoresController, AutorController
 from models.categoria import CategoriaModel
 from models.libro import LibroModel
 from models.sede import SedeModel
@@ -28,6 +28,6 @@ bd.create_all(app=app)
 
 # RUTAS DE MI API RESTFUL
 api.add_resource(AutoresController, '/autores')
-
+api.add_resource(AutorController, '/autor/<int:id>')
 if __name__ == '__main__':
     app.run(debug=True)

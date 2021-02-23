@@ -35,3 +35,27 @@ class AutoresController(Resource):
             'content': resultado,
             'message': None
         }
+
+class AutorController(Resource):
+    def get(self, id):
+        # .all() => retorna todas las coincidencias => retorna una lista de instancias
+        # .first() => retorna el primer registro de las coindencias => retorna una instancia
+        autorEncontrado = AutorModel.query.filter_by(autorId=id).first() 
+        print(autorEncontrado)
+        # si el autor se encontró retorna en el content su contenido pero si no se halló dicho autor indicar que el id no existe con un status 404
+        if autorEncontrado: # no sea vacia ó no sea False
+            return {
+                'success':True,
+                'content': autorEncontrado.json(),
+                'message': None
+            }
+        else:
+            return {
+                'success':False,
+                'content': None,
+                'message': 'El autor no existe'
+            }, 404
+    def put(self):
+        pass
+    def delete(self):
+        pass
