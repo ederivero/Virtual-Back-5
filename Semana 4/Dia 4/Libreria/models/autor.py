@@ -38,3 +38,9 @@ class AutorModel(bd.Model):
         bd.session.add(self)
         # el commit sirve para que los cambios realizados a la bd se hagan efecto, esto generalmente se usa con transacciones
         bd.session.commit()
+    
+    def json(self):
+        return {
+            'autor_id': self.autorId,
+            'autor_nombre': self.autorNombre
+        }

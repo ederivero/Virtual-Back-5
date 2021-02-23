@@ -11,7 +11,7 @@ serializer.add_argument(
 class AutoresController(Resource):
     def post(self):
         informacion = serializer.parse_args()
-        "INSERT INTO T_AUTOR (AUTOR_NOMBRE) VALUES (INFORMACION['AUTOR_NOMBRE'])"
+        # "INSERT INTO T_AUTOR (AUTOR_NOMBRE) VALUES (INFORMACION['AUTOR_NOMBRE'])"
         # creamos una nueva instancia de nuestro modelo del Autor pero aun no se ha creado en la bd, esto sirve para validar que los campos ingresados cumplan con las definiciones de las columnas
         nuevoAutor = AutorModel(informacion['autor_nombre'])
         # ahora si se guarda en la bd, si hubiese algun problema dara el error de la BD pero ese indice (pk) si es autoincrementable salta una posicion
@@ -19,7 +19,19 @@ class AutoresController(Resource):
         print(nuevoAutor)
         return {
             'success': True,
-            'content': None,
+            'content': nuevoAutor.json(),
             'message': 'Autor creado exitosamente'
         }, 201
-        
+    
+    def get(self):
+        # "SELECT * FROM T_AUTOR"
+        lista_autores= AutorModel.query.all()
+        resultado = []
+        for autor in lista_autores:
+            resultado.append(autor.json())
+            print(autor.json())
+        return {
+            'success': True,
+            'content': resultado,
+            'message': None
+        }
