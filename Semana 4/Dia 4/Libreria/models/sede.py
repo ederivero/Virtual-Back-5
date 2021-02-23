@@ -9,4 +9,4 @@ class SedeModel(bd.Model):
     sedeLatitd = bd.Column(name="sede_latitud", type_=bd.Float(), nullable=False)
     sedeLongitud = bd.Column(name="sede_longitud", type_=bd.Float(), nullable=False)
     
-    libros = relationship('LibroModel', backref='sedeLibro')
+    libros = relationship('SedeLibroModel', backref='sedeLibro')

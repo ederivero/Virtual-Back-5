@@ -16,4 +16,4 @@ class LibroModel(bd.Model):
     categoria = bd.Column(bd.ForeignKey('t_categoria.categoria_id'),
                           name="categoria_id", type_=bd.Integer, nullable=False)
     
-    sedes = relationship('SedeModel', backref='libroSede')
+    sedes = relationship('SedeLibroModel', backref='libroSede')
