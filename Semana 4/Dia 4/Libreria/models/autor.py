@@ -44,3 +44,7 @@ class AutorModel(bd.Model):
             'autor_id': self.autorId,
             'autor_nombre': self.autorNombre
         }
+    def delete(self):
+        # con el delete se hace la eliminacion TEMPORAL DE LA BASE DE DATOS
+        bd.session.delete(self)
+        bd.session.commit()

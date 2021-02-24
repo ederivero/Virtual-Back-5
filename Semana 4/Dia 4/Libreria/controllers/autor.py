@@ -1,3 +1,4 @@
+from operator import truediv
 from flask_restful import Resource, reqparse
 from models.autor import AutorModel
 serializer = reqparse.RequestParser()
@@ -55,7 +56,37 @@ class AutorController(Resource):
                 'content': None,
                 'message': 'El autor no existe'
             }, 404
-    def put(self):
-        pass
-    def delete(self):
-        pass
+    def put(self, id):
+        autorEncontrado = AutorModel.query.filter_by(autorId=id).first() 
+        # no siempre es necesaria hacer la validacion que el objeto exista puesto que el front se debe encargar de hacer esta validacion
+        if autorEncontrado:
+            data = serializer.parse_args()
+            autorEncontrado.autorNombre = data['autor_nombre']
+            autorEncontrado.save()
+            return {
+                'success': True,
+                'content': autorEncontrado.json(),
+                'message': 'Se actualizo el autor con exito'
+            }, 201
+        else:
+            return {
+                'success': False,
+                'content': None,
+                'message': 'No se encontro el autor a actualizar'
+            }, 404
+
+    def delete(self,id):
+        autorEncontrado = AutorModel.query.filter_by(autorId=id).first()
+        if autorEncontrado:
+            autorEncontrado.delete()
+            return {
+                'success': True,
+                'content': None,
+                'message': 'Se elimino exitosamente el autor de la bd'
+            }
+        else:
+            return {
+                'success': False,
+                'content': None,
+                'message':'No se encontro el autor a eliminar'
+            }, 404
