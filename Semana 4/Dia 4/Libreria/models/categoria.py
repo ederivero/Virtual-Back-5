@@ -10,3 +10,15 @@ class CategoriaModel(bd.Model):
     
     # esto no crea las relaciones simplemente sirve para al momento de hacer consultas con JOIN's
     libros = relationship('LibroModel', backref='categoriaLibro', lazy=True)
+
+    def json(self):
+        return {
+            'categoria_id': self.categoriaId,
+            'categoria_descripcion': self.categoriaDescripcion
+        }
+    def __init__(self, nombre):
+        self.categoriaDescripcion = nombre
+    
+    def save(self):
+        bd.session.add(self)
+        bd.session.commit()
