@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Api
 from config.base_datos import bd
 # from models.autor import AutorModel
@@ -7,7 +7,8 @@ from controllers.autor import AutoresController, AutorController
 from controllers.categoria import CategoriaController
 # from models.libro import LibroModel
 from controllers.libro import LibrosController, LibroModel
-from models.sede import SedeModel
+# from models.sede import SedeModel
+from controllers.sede import SedesController
 from models.sedeLibro import SedeLibroModel
 app = Flask(__name__)
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/#connection-uri-format
@@ -30,17 +31,32 @@ bd.create_all(app=app)
 
 @app.route('/buscar')
 def buscarLibro():
-    busquedaLibro = LibroModel.query.filter(LibroModel.libroNombre.like('%'+'esperes'+'%')).all()
-    print(busquedaLibro)
+    print(request.args.get('palabra'))
+    # print(request.args['palabra'])
+    # de acuerdo a la palabra mandada que me de el resultado de la busqueda de todos los libros, si no hay ningun libro con esa palabra o no se mandó la palabra indicar que la busqueda no tuvo efecto. con un BAD REQUEST 
+    palabra = request.args.get('palabra')
+    if palabra:
+        resultadoBusqueda = LibroModel.query.filter(LibroModel.libroNombre.like('%'+palabra+'%')).all()
+        if resultadoBusqueda:
+            resultado = []
+            for libro in resultadoBusqueda:
+                resultado.append(libro.json())
+            return {
+                'success': True,
+                'content': resultado,
+                'message': None
+            }
     return {
-        'success': True,
-        'content': None
-    }
+        'success': False,
+        'content': None,
+        'message': 'No se encontro nada para buscar o la busqueda no tuvo éxito'
+    }, 400
 
 # RUTAS DE MI API RESTFUL
 api.add_resource(AutoresController, '/autores')
 api.add_resource(AutorController, '/autor/<int:id>')
 api.add_resource(CategoriaController, '/categorias', '/categoria')
 api.add_resource(LibrosController, '/libro', '/libros')
+api.add_resource(SedesController, '/sedes', '/sede')
 if __name__ == '__main__':
     app.run(debug=True)
