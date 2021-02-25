@@ -56,6 +56,9 @@ class LibrosController(Resource):
         for libro in libros:
             resultadoTemporal = libro.json()
             resultadoTemporal['autor'] = libro.autorLibro.json()
+            resultadoTemporal['categoria'] = libro.categoriaLibro.json()
+            del resultadoTemporal['autor_id'] # forma para eliminar una llave de un diccionario
+            del resultadoTemporal['categoria_id']
             resultado.append(resultadoTemporal)
             # resultado.append(libro.autorLibro.json())
         return {
@@ -63,3 +66,4 @@ class LibrosController(Resource):
             'content': resultado,
             'message': None
         }
+

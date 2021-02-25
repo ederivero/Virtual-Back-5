@@ -6,7 +6,7 @@ from controllers.autor import AutoresController, AutorController
 # from models.categoria import CategoriaModel
 from controllers.categoria import CategoriaController
 # from models.libro import LibroModel
-from controllers.libro import LibrosController
+from controllers.libro import LibrosController, LibroModel
 from models.sede import SedeModel
 from models.sedeLibro import SedeLibroModel
 app = Flask(__name__)
@@ -27,6 +27,15 @@ bd.init_app(app)
 # recien se conecta a la bd, pero necesita el driver para poder conectarse
 # para conectarnos a una base de datos en mysql deberemos instalar el driver: pip install mysqlclient
 bd.create_all(app=app)
+
+@app.route('/buscar')
+def buscarLibro():
+    busquedaLibro = LibroModel.query.filter(LibroModel.libroNombre.like('%'+'esperes'+'%')).all()
+    print(busquedaLibro)
+    return {
+        'success': True,
+        'content': None
+    }
 
 # RUTAS DE MI API RESTFUL
 api.add_resource(AutoresController, '/autores')
