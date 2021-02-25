@@ -8,7 +8,7 @@ from controllers.categoria import CategoriaController
 # from models.libro import LibroModel
 from controllers.libro import LibrosController, LibroModel
 # from models.sede import SedeModel
-from controllers.sede import SedesController
+from controllers.sede import LibroSedeController, SedesController
 from models.sedeLibro import SedeLibroModel
 app = Flask(__name__)
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/#connection-uri-format
@@ -58,5 +58,7 @@ api.add_resource(AutorController, '/autor/<int:id>')
 api.add_resource(CategoriaController, '/categorias', '/categoria')
 api.add_resource(LibrosController, '/libro', '/libros')
 api.add_resource(SedesController, '/sedes', '/sede')
+api.add_resource(LibroSedeController, '/sedeLibros/<int:id_sede>')
+
 if __name__ == '__main__':
     app.run(debug=True)

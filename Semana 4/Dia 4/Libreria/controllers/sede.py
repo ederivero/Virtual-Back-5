@@ -1,3 +1,4 @@
+from models.sedeLibro import SedeLibroModel
 from flask_restful import Resource, reqparse
 from models.sede import SedeModel
 # basico
@@ -42,10 +43,45 @@ class SedesController(Resource):
             'message': 'Se creo la sede exitosamente'
         }, 201
     def get(self):
-        pass
-
+        sedes = SedeModel.query.all()
+        resultado = []
+        for sede in sedes:
+            resultado.append(sede.json())
+        return {
+            'success': True,
+            'content': resultado,
+            'message': None
+        }
 
 
 
 # busqueda de todos los libros de una sede 
+class LibroSedeController(Resource):
+    def get(self, id_sede):
+        # de acuerdo al id de la sede, devolver todos los libros que hay en esa sede.
+        sede = SedeModel.query.filter_by(sedeId = id_sede).first()
+        # SedeLibroModel.query.filter_by(sedeId = id_sede).first()
+        sedeLibros = sede.libros # todas mis sedelibros
+        libros=[]
+        for sedeLibro in sedeLibros:
+            libro = sedeLibro.libroSede.json()
+            # agregar el autor de ese libro
+            libro['autor'] = sedeLibro.libroSede.autorLibro.json()
+            libros.append(libro)
+            # print(sedeLibro.libroSede.json())
+        resultado = sede.json()
+        resultado['libros'] = libros
+        return {
+            'success':True,
+            'content': resultado
+        }
+
+
+
+
+
+
+
+
+
 # busqueda de todos los libros de una sede segun su categoria
