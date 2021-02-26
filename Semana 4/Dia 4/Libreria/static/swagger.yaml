@@ -279,7 +279,7 @@ paths:
         200:
           description: ''
           headers: {}
-  /sedeLibros/1:
+  /sedeLibros/{id}:
     get:
       description: Ruta para devolver todos los libros de una sede
       summary: /sedeLibros/:id
@@ -289,7 +289,13 @@ paths:
       deprecated: false
       produces:
       - application/json
-      parameters: []
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id del autor a buscar"
+        required: True
+        type: "integer"
+        format: "int64"
       responses:
         200:
           description: ''
