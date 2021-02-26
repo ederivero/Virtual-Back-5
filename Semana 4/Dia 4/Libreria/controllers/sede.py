@@ -67,8 +67,13 @@ class LibroSedeController(Resource):
             libro = sedeLibro.libroSede.json()
             # agregar el autor de ese libro
             libro['autor'] = sedeLibro.libroSede.autorLibro.json()
+            # agregar la categoria del libro pero solamente su descripcion (no necesito el ID)
+            # print(sedeLibro.libroSede.categoriaLibro.categoriaDescripcion)
+            libro['categoria'] = sedeLibro.libroSede.categoriaLibro.json()
+            del libro['categoria']['categoria_id']
+            del libro['autor_id']
             libros.append(libro)
-            # print(sedeLibro.libroSede.json())
+            
         resultado = sede.json()
         resultado['libros'] = libros
         return {
@@ -79,9 +84,40 @@ class LibroSedeController(Resource):
 
 
 
-
-
-
-
-
 # busqueda de todos los libros de una sede segun su categoria
+# categoria
+# sede
+# 127.0.0.1:5000/buscarLibroCategoria?sede=1&categoria=2
+class LibroCategoriaSedeController(Resource):
+    def get(self):
+        serializer.remove_argument('sede_latitud')
+        serializer.remove_argument('sede_ubicacion')
+        serializer.remove_argument('sede_longitud')
+        serializer.add_argument(
+            'categoria',
+            type=int,
+            required=True,
+            help='Falta la categoria',
+            location='args'
+        )
+        serializer.add_argument(
+            'sede',
+            type=int,
+            required=True,
+            help='Falta la sede',
+            location='args' # sirve para que me lo mande por el querystring (de forma dinamica)
+        )
+        data = serializer.parse_args()
+        # luego de mi sede ingresar a mi sede_libro -> [] ... , luego ingresar a mis libros y hacer el filtro segun la categoria (data['categoria'])
+        sede = SedeModel.query.filter_by(sedeId = data['sede']).first()
+        # print(sede.libros)
+        libros = []
+        for sedelibro in sede.libros:
+            # print(sedelibro.libroSede.categoria)
+            if (sedelibro.libroSede.categoria == data['categoria']):
+                libros.append(sedelibro.libroSede.json())
+                
+        return {
+            'success': True,
+            'content': libros
+        }

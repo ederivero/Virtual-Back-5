@@ -6,9 +6,13 @@ from controllers.autor import AutoresController, AutorController
 # from models.categoria import CategoriaModel
 from controllers.categoria import CategoriaController
 # from models.libro import LibroModel
-from controllers.libro import LibrosController, LibroModel
+from controllers.libro import ( LibrosController, 
+                                LibroModel, 
+                                RegistroLibroSedeController)
 # from models.sede import SedeModel
-from controllers.sede import LibroSedeController, SedesController
+from controllers.sede import (LibroCategoriaSedeController,
+                              LibroSedeController,
+                              SedesController)
 from models.sedeLibro import SedeLibroModel
 app = Flask(__name__)
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/#connection-uri-format
@@ -29,14 +33,16 @@ bd.init_app(app)
 # para conectarnos a una base de datos en mysql deberemos instalar el driver: pip install mysqlclient
 bd.create_all(app=app)
 
+
 @app.route('/buscar')
 def buscarLibro():
     print(request.args.get('palabra'))
     # print(request.args['palabra'])
-    # de acuerdo a la palabra mandada que me de el resultado de la busqueda de todos los libros, si no hay ningun libro con esa palabra o no se mandó la palabra indicar que la busqueda no tuvo efecto. con un BAD REQUEST 
+    # de acuerdo a la palabra mandada que me de el resultado de la busqueda de todos los libros, si no hay ningun libro con esa palabra o no se mandó la palabra indicar que la busqueda no tuvo efecto. con un BAD REQUEST
     palabra = request.args.get('palabra')
     if palabra:
-        resultadoBusqueda = LibroModel.query.filter(LibroModel.libroNombre.like('%'+palabra+'%')).all()
+        resultadoBusqueda = LibroModel.query.filter(
+            LibroModel.libroNombre.like('%'+palabra+'%')).all()
         if resultadoBusqueda:
             resultado = []
             for libro in resultadoBusqueda:
@@ -52,6 +58,7 @@ def buscarLibro():
         'message': 'No se encontro nada para buscar o la busqueda no tuvo éxito'
     }, 400
 
+
 # RUTAS DE MI API RESTFUL
 api.add_resource(AutoresController, '/autores')
 api.add_resource(AutorController, '/autor/<int:id>')
@@ -59,6 +66,7 @@ api.add_resource(CategoriaController, '/categorias', '/categoria')
 api.add_resource(LibrosController, '/libro', '/libros')
 api.add_resource(SedesController, '/sedes', '/sede')
 api.add_resource(LibroSedeController, '/sedeLibros/<int:id_sede>')
-
+api.add_resource(LibroCategoriaSedeController, '/busquedaLibroSedeCat')
+api.add_resource(RegistroLibroSedeController, '/registrarSedesLibro')
 if __name__ == '__main__':
     app.run(debug=True)

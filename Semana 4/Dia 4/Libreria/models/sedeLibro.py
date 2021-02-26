@@ -8,3 +8,11 @@ class SedeLibroModel(bd.Model):
     int
     sede = Column(ForeignKey('t_sede.sede_id'), name='sede_id', type_=types.Integer)
     libro = Column(ForeignKey('t_libro.libro_id'), name='libro_id', type_=types.Integer)
+
+    def __init__(self, sede_id, libro_id):
+        self.sede = sede_id
+        self.libro = libro_id
+    
+    def save(self):
+        bd.session.add(self)
+        bd.session.commit()
