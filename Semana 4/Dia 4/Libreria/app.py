@@ -13,12 +13,14 @@ from controllers.libro import ( LibrosController,
 from controllers.sede import (LibroCategoriaSedeController,
                               LibroSedeController,
                               SedesController)
-from models.sedeLibro import SedeLibroModel
+# from models.sedeLibro import SedeLibroModel
+from flask_cors import CORS
 app = Flask(__name__)
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/#connection-uri-format
 #                                    formato://username:password@host:port/databasename
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost:3306/flasklibreria'
 api = Api(app)
+CORS(app) # PERMITIENDO TODOS LOS METODOS , DOMINIOS Y HEADERS
 
 # si tu servidor no tiene contraseña, ponlo asi:
 # 'mysql://root:@localhost:3306/flasklibreria'
