@@ -15,7 +15,22 @@ from controllers.sede import (LibroCategoriaSedeController,
                               SedesController)
 # from models.sedeLibro import SedeLibroModel
 from flask_cors import CORS
+# para la documentacion
+from flask_swagger_ui import get_swaggerui_blueprint
+
+SWAGGER_URL = '' # esta variable se usa para indicar en que endpoint se encontrará la documentacion
+API_URL = '/static/swagger.json' # se usa para indicar en que parte del proyecto se encuentra el archivo de la documentacion
+swagger_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Libreria Flask - Swagger Documentation"
+    }
+)
+
 app = Flask(__name__)
+app.register_blueprint(swagger_blueprint)
+
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/config/#connection-uri-format
 #                                    formato://username:password@host:port/databasename
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost:3306/flasklibreria'
