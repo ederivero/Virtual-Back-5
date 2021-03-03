@@ -56,3 +56,17 @@ class UsuarioModel(bd.Model):
         type_=types.Boolean(),
         nullable=False
     )
+
+    def __init__(self, nombre, apellido, correo, password, titulo, informacion, curriculum, superusuario):
+        self.usuarioNombre = nombre
+        self.usuarioApellido = apellido
+        self.usuarioCorreo = correo
+        self.usuarioTitulo = titulo
+        self.usuarioInfo = informacion
+        self.usuarioCV = curriculum
+        self.usuarioSuperUser = superusuario
+        self.usuarioPassword = password
+    
+    def save(self):
+        bd.session.add(self)
+        bd.session.commit()
