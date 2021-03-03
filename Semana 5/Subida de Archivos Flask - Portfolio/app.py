@@ -1,8 +1,9 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
+from flask_restful import Api
 from config.base_datos import bd
 from models.usuario import UsuarioModel
 from models.categoria import CategoriaModel
-from models.redSocial import RedSocialModel
+from controllers.redSocial import RedSocialController
 from models.usuarioRedSocial import UsuarioRedSocialModel
 from models.contacto import ContactoModel
 from models.conocimiento import ConocimientoModel
@@ -11,6 +12,8 @@ from werkzeug.utils import secure_filename
 import os
 from uuid import uuid4 # es un codigo unico irrepetible
 app = Flask(__name__)
+api = Api(app)
+
 # ALTER USER 'userame'@'url' IDENTIFIED WITH mysql_native_password BY 'password';
 # ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
 # mysql://username:password@host:port/base_datos
@@ -27,6 +30,7 @@ EXTENSIONES_PERMITIDAS_IMAGENES = ['jpg', 'png', 'jpeg']
 
 def filtro_extensiones(filename):
     # el metodo rsplit puede recibir dos parametros, el primer parametro es el caracter a divir y el segundo opcional es el que especifica en cuantas partes debe de ser dividido
+    # nos va a indicar si es true o false si es que la extension de nuestro archivo hace MATCH con alguno de la lista de extensiones permitidas
     return '.' in filename and \
             filename.rsplit('.', 1)[-1].lower() in EXTENSIONES_PERMITIDAS_IMAGENES
 
@@ -50,20 +54,49 @@ def subir_archivo():
             'content': None
         }, 400
     print(filtro_extensiones(archivo.filename))
-    if filtro_extensiones(archivo.filename):
-        # asi extraigo el formato del archivo antes de modificar su nombre
-        formato = archivo.filename.rsplit(".")[-1]
-        print(archivo.filename.rsplit("."))
-        # como hago para obtener la ultima posicion de una lista en python
-        nombre_modificado = str(uuid4())+'.'+formato
-        nombre_archivo = secure_filename(nombre_modificado)
-        # este es el proceso para guardar el archivo en el servidor
-        archivo.save(os.path.join(UPLOAD_FOLDER,nombre_archivo))
+    if filtro_extensiones(archivo.filename) is False:
         return {
-            'success': True,
-            'message': 'Se guardo el archivo exitosamente',
-            'content': nombre_archivo
-        }, 201
+            'success': False,
+            'message': 'Archivo no permitido',
+            'content': None
+        }, 400
+    # asi extraigo el formato del archivo antes de modificar su nombre
+    formato = archivo.filename.rsplit(".")[-1]
+    print(archivo.filename.rsplit("."))
+    # como hago para obtener la ultima posicion de una lista en python
+    nombre_modificado = str(uuid4())+'.'+formato
+    nombre_archivo = secure_filename(nombre_modificado)
+    # este es el proceso para guardar el archivo en el servidor
+    archivo.save(os.path.join(UPLOAD_FOLDER,nombre_archivo))
+    return {
+        'success': True,
+        'message': 'Se guardo el archivo exitosamente',
+        'content': nombre_archivo
+    }, 201
+
+@app.route('/devolverImagen/<string:nombre>', methods=['GET'])
+def devolver_archivo(nombre):
+    # el metodo send_file sirve para mandar cualquier tipo de archivos, si es un archivo imagen se mostrara caso contrario se descargará
+    try:
+        return send_file(os.path.join(UPLOAD_FOLDER, nombre))
+    except:
+        return send_file(os.path.join(UPLOAD_FOLDER, 'default.png'))
+
+@app.route('/eliminarImagen/<string:nombre>', methods=['DELETE'])
+def remove_file(nombre):
+    try:
+        os.remove(os.path.join(UPLOAD_FOLDER,nombre))
+        return {
+            'success':True,
+            'content': 'Imagen eliminada exitosamente'
+        }
+    except:
+        return {
+            'success': False,
+            'content': 'No se encontro la imagen a eliminar'
+        }
+
+api.add_resource(RedSocialController, '/redsocial')
 
 
 if __name__ == '__main__':

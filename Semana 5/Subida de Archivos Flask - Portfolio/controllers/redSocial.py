@@ -1,5 +1,5 @@
 # CREAR, EDITAR Y LEER (todas)
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, request
 from models.redSocial import RedSocialModel
 
 class RedSocialController(Resource):
@@ -30,4 +30,18 @@ class RedSocialController(Resource):
     def put(self):
         pass
     def get(self):
-        pass
+        # host => me retorna el dominio
+        # host_url => me retorna el dominio en formato url
+        # print(request.host)
+        # print(request.host_url)
+        redesSociales = RedSocialModel.query.all()
+        resultado = []
+        for redSocial in redesSociales:
+            temporal = redSocial.json()
+            temporal['rs_imagen'] = request.host_url+'devolverImagen/'+temporal['rs_imagen']
+            resultado.append(temporal)
+        return {
+            'success': True,
+            'content': resultado,
+            'message': None
+        }

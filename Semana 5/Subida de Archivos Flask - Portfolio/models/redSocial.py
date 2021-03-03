@@ -29,3 +29,10 @@ class RedSocialModel(bd.Model):
     def save(self):
         bd.session.add(self)
         bd.session.commit()
+    
+    def json(self):
+        return {
+            'rs_id': self.redSocialId,
+            'rs_nombre': self.redSocialNombre,
+            'rs_imagen': self.redSocialImagen
+        }
