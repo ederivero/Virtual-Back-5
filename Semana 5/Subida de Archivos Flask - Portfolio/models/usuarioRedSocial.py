@@ -2,7 +2,7 @@ from config.base_datos import bd
 from sqlalchemy import Column, types
 from sqlalchemy.schema import ForeignKey
 
-class UsuarioRedSocial(bd.Model):
+class UsuarioRedSocialModel(bd.Model):
     __tablename__='t_usu_rs'
     usuRedSocId = Column(
         name='usu_rs_id',

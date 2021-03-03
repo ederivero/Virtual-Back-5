@@ -19,7 +19,14 @@ class RedSocialController(Resource):
         location='json'
     )
     def post(self):
-        pass
+        data = self.serializer.parse_args()
+        nuevaRedSocial = RedSocialModel(data['rs_nombre'], data['rs_imagen'])
+        nuevaRedSocial.save()
+        return {
+            'success': True,
+            'content': nuevaRedSocial.json(),
+            'message': 'Se creo la nueva red social'
+        }
     def put(self):
         pass
     def get(self):
