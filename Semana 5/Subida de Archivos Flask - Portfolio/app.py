@@ -11,6 +11,9 @@ from models.conocimiento import ConocimientoModel
 from werkzeug.utils import secure_filename 
 import os
 from uuid import uuid4 # es un codigo unico irrepetible
+from flask_jwt import JWT, jwt_required
+from config.seguridad import autenticador, identificador
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -20,6 +23,11 @@ api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost:3306/portfolioFlask'
 # sirve para evitar el warning de seguimiento de las modificaciones a la bd que en un futuro generará costos de memoria significativos
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY']='miclavesecreta' # esto usa FLASK-JWT para encriptar la token, esta sera la contraseña para encriptar y desencriptar la token
+app.config['JWT_AUTH_URL_RULE']='/iniciarSesion'
+app.config['JWT_AUTH_USERNAME_KEY']='correo'
+app.config['JWT_AUTH_PASSWORD_KEY']='contraseña'
+jsonwebtoken = JWT(app=app, authentication_handler=autenticador, identity_handler=identificador)
 
 bd.init_app(app)
 bd.create_all(app=app)
@@ -95,6 +103,14 @@ def remove_file(nombre):
             'success': False,
             'content': 'No se encontro la imagen a eliminar'
         }
+
+@app.route('/protegida')
+@jwt_required()
+def mostrar_saludo():
+    return {
+        'mensaje': 'Hola!'
+    }
+
 
 api.add_resource(RedSocialController, '/redsocial')
 api.add_resource(RegistroController, '/registro')
