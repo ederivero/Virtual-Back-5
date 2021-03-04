@@ -1,5 +1,6 @@
 from config.base_datos import bd
 from sqlalchemy import Column, types
+import bcrypt
 
 class UsuarioModel(bd.Model):
     __tablename__="t_usuario"
@@ -57,7 +58,7 @@ class UsuarioModel(bd.Model):
         nullable=False
     )
 
-    def __init__(self, nombre, apellido, correo, password, titulo, informacion, curriculum, superusuario):
+    def __init__(self, nombre, apellido, correo, password, titulo, informacion, curriculum, superusuario, foto):
         self.usuarioNombre = nombre
         self.usuarioApellido = apellido
         self.usuarioCorreo = correo
@@ -65,8 +66,28 @@ class UsuarioModel(bd.Model):
         self.usuarioInfo = informacion
         self.usuarioCV = curriculum
         self.usuarioSuperUser = superusuario
-        self.usuarioPassword = password
+        self.usuarioFoto = foto
+        # AHORA ENCRIPTO LA CONTRASEÑA
+        # primero agarro la password y la convierto a bytes mediante el formato de escritura UTF-8
+        password = bytes(password, 'utf-8')
+        # el metodo hashpw va a ser el encargado de encriptar la contraseña con un salt generado aleatoriamente y retornara el hash pero en formato bytes
+        hash = bcrypt.hashpw(password, bcrypt.gensalt())
+        # ahora convertimos ese hash a formato string para que pueda ser almacenado en la bd
+        self.usuarioPassword = hash.decode('utf-8')
     
     def save(self):
         bd.session.add(self)
         bd.session.commit()
+
+    def json(self):
+        return {
+            'usuario_id': self.usuarioId,
+            'usuario_nombre':self.usuarioNombre,
+            'usuario_apellido':self.usuarioApellido,
+            'usuario_correo':self.usuarioCorreo,
+            'usuario_titulo':self.usuarioTitulo,
+            'usuario_info':self.usuarioInfo,
+            'usuario_cv':self.usuarioCV,
+            'usuario_foto':self.usuarioFoto
+        }
+

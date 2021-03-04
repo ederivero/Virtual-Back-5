@@ -1,7 +1,7 @@
 from flask import Flask, request, send_file
 from flask_restful import Api
 from config.base_datos import bd
-from models.usuario import UsuarioModel
+from controllers.usuario import RegistroController, LoginController
 from models.categoria import CategoriaModel
 from controllers.redSocial import RedSocialController
 from models.usuarioRedSocial import UsuarioRedSocialModel
@@ -97,6 +97,8 @@ def remove_file(nombre):
         }
 
 api.add_resource(RedSocialController, '/redsocial')
+api.add_resource(RegistroController, '/registro')
+api.add_resource(LoginController, '/login')
 
 
 if __name__ == '__main__':
