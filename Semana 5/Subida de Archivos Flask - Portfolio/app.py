@@ -11,7 +11,7 @@ from models.conocimiento import ConocimientoModel
 from werkzeug.utils import secure_filename 
 import os
 from uuid import uuid4 # es un codigo unico irrepetible
-from flask_jwt import JWT, jwt_required
+from flask_jwt import JWT, jwt_required, current_identity
 from config.seguridad import autenticador, identificador
 
 app = Flask(__name__)
@@ -107,6 +107,7 @@ def remove_file(nombre):
 @app.route('/protegida')
 @jwt_required()
 def mostrar_saludo():
+    print(current_identity)
     return {
         'mensaje': 'Hola!'
     }

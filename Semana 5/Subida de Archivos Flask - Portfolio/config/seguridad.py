@@ -35,7 +35,12 @@ def identificador(payload):
     if(payload['identity']):
         usuario = UsuarioModel.query.filter_by(usuarioId=payload['identity']).first()
         if usuario:
-            return (usuario.usuarioId, usuario.usuarioCorreo, usuario.usuarioSuperUser)
+            return {
+                "usuario_id": usuario.usuarioId,
+                "usuario_correo":usuario.usuarioCorreo,
+                "usuario_superuser": usuario.usuarioSuperUser,
+            }
+            # (usuario.usuarioId, usuario.usuarioCorreo, usuario.usuarioSuperUser)
         else:
             # el usuario en la token no existe en mi bd (eso es imposible!)
             return None
