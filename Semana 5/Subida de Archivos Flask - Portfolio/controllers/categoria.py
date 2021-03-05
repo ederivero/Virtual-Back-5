@@ -37,7 +37,13 @@ class CategoriaController(Resource):
             'content': nuevaCategoria.json(),
             'message': 'Se creo la categoria exitosamente'
         }, 201
+    @jwt_required()
     def get(self):
-        pass
+        print(current_identity)
+        categorias = CategoriaModel.query.filter_by(usuario=current_identity['usuario_id']).all()
+        print(categorias)
+        return {
+            'success': True
+        }
     def delete(self):
         pass

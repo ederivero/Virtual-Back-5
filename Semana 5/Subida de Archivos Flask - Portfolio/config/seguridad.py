@@ -31,7 +31,7 @@ def autenticador(username, password):
 def identificador(payload):
     """El identificador sirve para que, una vez el usuario ya logeado, pueda hacer peticiones a una ruta protegida y este será el encargado de identificar a dicho usuario y devolver su informacion al controlador a consultar"""
     # el payload es un diccionario en el cual la identidad del usuario (id) se guarda en su llave "identity"
-    print(payload)
+    # print(payload)
     if(payload['identity']):
         usuario = UsuarioModel.query.filter_by(usuarioId=payload['identity']).first()
         if usuario:
