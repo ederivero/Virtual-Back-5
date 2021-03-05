@@ -6,4 +6,4 @@ def manejo_error_jwt(error):
     print(error.headers) # la cabecera de ese error
     return {
         'success': False
-    }, 200
+    }, 400
