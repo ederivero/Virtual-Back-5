@@ -13,6 +13,8 @@ import os
 from uuid import uuid4 # es un codigo unico irrepetible
 from flask_jwt import JWT, jwt_required, current_identity
 from config.seguridad import autenticador, identificador
+from config.jwt import manejo_error_jwt
+from datetime import timedelta
 
 app = Flask(__name__)
 api = Api(app)
@@ -24,10 +26,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost:3306/portfo
 # sirve para evitar el warning de seguimiento de las modificaciones a la bd que en un futuro generará costos de memoria significativos
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY']='miclavesecreta' # esto usa FLASK-JWT para encriptar la token, esta sera la contraseña para encriptar y desencriptar la token
-app.config['JWT_AUTH_URL_RULE']='/iniciarSesion'
-app.config['JWT_AUTH_USERNAME_KEY']='correo'
-app.config['JWT_AUTH_PASSWORD_KEY']='contraseña'
+app.config['JWT_AUTH_URL_RULE']='/iniciarSesion' # para modificar la ruta de autenticacion
+app.config['JWT_AUTH_USERNAME_KEY']='correo' # para modificar la llave del username
+app.config['JWT_AUTH_PASSWORD_KEY']='contraseña' # para modificar la llave del password
+app.config['JWT_AUTH_HEADER_PREFIX'] = 'Bearer' # para modificar la cabecera (la palabra antes de la token) en la que se pasa la token
+app.config['JWT_EXPIRATION_DELTA']= timedelta(minutes=10) # para modificar el tiempo de vida de la token
+
 jsonwebtoken = JWT(app=app, authentication_handler=autenticador, identity_handler=identificador)
+jsonwebtoken.jwt_error_callback = manejo_error_jwt # para modificar el manejo de errores que puede dar la token
 
 bd.init_app(app)
 bd.create_all(app=app)
