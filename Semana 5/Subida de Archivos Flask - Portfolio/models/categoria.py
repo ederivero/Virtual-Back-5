@@ -1,5 +1,6 @@
 from config.base_datos import bd
 from sqlalchemy import Column, types
+from sqlalchemy.schema import ForeignKey
 
 class CategoriaModel(bd.Model):
     __tablename__='t_categoria'
@@ -28,12 +29,29 @@ class CategoriaModel(bd.Model):
         default=True, 
         nullable=False
     )
-    def __init__(self, nombre, orden, estado ):
+    # FK
+    usuario = Column(
+        ForeignKey('t_usuario.usuario_id'),
+        name='usuario_id',
+        type_=types.Integer,
+        nullable=False
+    )
+
+    def __init__(self, nombre, orden, estado, usuario ):
         self.categoriaNombre = nombre
         self.categoriaOrden = orden
+        self.usuario = usuario
         if estado: 
             self.categoriaEstado = estado
     
     def save(self):
         bd.session.add(self)
         bd.session.commit()
+    
+    def json(self):
+        return {
+            'cat_id': self.categoriaId,
+            'cat_nombre': self.categoriaNombre,
+            'cat_orden':self.categoriaOrden,
+            'cat_estado': self.categoriaEstado
+        }

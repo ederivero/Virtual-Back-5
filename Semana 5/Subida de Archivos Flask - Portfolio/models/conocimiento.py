@@ -44,21 +44,14 @@ class ConocimientoModel(bd.Model):
         type_=types.Integer,
         nullable=False
     )
-    usuario = Column(
-        ForeignKey('t_usuario.usuario_id'),
-        name='usuario_id',
-        type_=types.Integer,
-        nullable=False
-    )
 
-    def __init__(self, titulo, puntuacion, imagentn, imagenl, descripcion, categoria, usuario):
+    def __init__(self, titulo, puntuacion, imagentn, imagenl, descripcion, categoria):
         self.conocimientoTitulo = titulo
         self.conocimientoPuntuacion = puntuacion
         self.conocimientoImagenTN = imagentn
         self.conocimientoImagenLarge = imagenl,
         self.conocimientoDescripcion = descripcion
         self.categoria = categoria
-        self.usuario = usuario
     
     def save(self):
         bd.session.add(self)

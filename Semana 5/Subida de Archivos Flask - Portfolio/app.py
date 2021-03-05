@@ -36,6 +36,8 @@ jsonwebtoken = JWT(app=app, authentication_handler=autenticador, identity_handle
 jsonwebtoken.jwt_error_callback = manejo_error_jwt # para modificar el manejo de errores que puede dar la token
 
 bd.init_app(app)
+# bd.drop_all(app=app)
+
 bd.create_all(app=app)
 
 # sirve para indicar en que parte del proyecto se va a almacenar los archivos subidos
