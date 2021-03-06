@@ -5,7 +5,7 @@ from controllers.usuario import RegistroController, LoginController
 from controllers.categoria import CategoriaController
 from controllers.redSocial import RedSocialController
 from models.usuarioRedSocial import UsuarioRedSocialModel
-from models.contacto import ContactoModel
+from controllers.contacto import ContactoController
 from models.conocimiento import ConocimientoModel
 # srive para que el nombre del archivo que me manda el cliente lo valide antes de guardar y evita que se guarde nombre con caracteres especiales que puedan malograr el funcionamiento de mi api
 from werkzeug.utils import secure_filename 
@@ -125,6 +125,7 @@ api.add_resource(RedSocialController, '/redsocial')
 api.add_resource(RegistroController, '/registro')
 api.add_resource(LoginController, '/login')
 api.add_resource(CategoriaController, '/categoria', '/categoria/<int:id>')
+api.add_resource(ContactoController, '/contacto')
 
 if __name__ == '__main__':
     app.run(debug=True)
