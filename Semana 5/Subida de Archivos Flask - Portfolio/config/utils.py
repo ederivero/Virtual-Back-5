@@ -9,8 +9,6 @@ mensaje['From'] = 'testappseduardo@gmail.com' # cliente del correo
 mensaje['Subject'] = 'Registro completado!' # Titulo del correo
 
 def enviarCorreo(para, nombre):
-    print(para)
-    print(nombre)
     mensaje['To'] = para # el correo a quien quiero enviar el correo
     cuerpo = 'Hola! {} \n Gracias por comunicarte conmigo, nos pondremos en contacto pronto! 😁'.format(nombre)
     mensaje.attach(MIMEText(cuerpo,'plain')) # ahora, adjunto toda la configuracion del correo con el cuerpo del mensaje a enviar y le indico en que formato se mandara
