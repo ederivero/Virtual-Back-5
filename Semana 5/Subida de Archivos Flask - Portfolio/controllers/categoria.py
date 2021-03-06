@@ -39,11 +39,29 @@ class CategoriaController(Resource):
         }, 201
     @jwt_required()
     def get(self):
-        print(current_identity)
+        # print(current_identity)
         categorias = CategoriaModel.query.filter_by(usuario=current_identity['usuario_id']).all()
-        print(categorias)
+        resultado = []
+        for categoria in categorias:
+            resultadoCategoria = categoria.json()
+            # print(categoria.conocimientos)
+            conocimientos = []
+            for conocimiento in categoria.conocimientos:
+                conocimientos.append(conocimiento.json())
+                # print(conocimiento.json())
+            resultadoCategoria['conocimientos'] = conocimientos
+            resultado.append(resultadoCategoria)
+        # print(categorias)
         return {
-            'success': True
+            'success': True,
+            'content': resultado
         }
-    def delete(self):
-        pass
+    @jwt_required()
+    def delete(self, id):
+        categoria = CategoriaModel.query.filter_by(categoriaId=id).first()
+        categoria.delete()
+        return {
+            'success': True,
+            'content': None,
+            'message': 'Se elimino la categoria exitosamente'
+        }

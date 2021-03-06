@@ -56,3 +56,14 @@ class ConocimientoModel(bd.Model):
     def save(self):
         bd.session.add(self)
         bd.session.commit()
+    
+    def json(self):
+        return {
+            'conocimiento_id': self.conocimientoId,
+            'conocimiento_titulo': self.conocimientoTitulo,
+            'conocimiento_puntuacion': str(self.conocimientoPuntuacion),
+            'conocimiento_imagen_thumbnail': self.conocimientoImagenTN,
+            'conocimiento_imagen_large': self.conocimientoImagenLarge,
+            'conocimiento_descripcion': self.conocimientoDescripcion,
+            'cat_id': self.categoria,
+        }

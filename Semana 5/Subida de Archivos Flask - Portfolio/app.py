@@ -124,7 +124,7 @@ def mostrar_saludo():
 api.add_resource(RedSocialController, '/redsocial')
 api.add_resource(RegistroController, '/registro')
 api.add_resource(LoginController, '/login')
-api.add_resource(CategoriaController, '/categoria')
+api.add_resource(CategoriaController, '/categoria', '/categoria/<int:id>')
 
 if __name__ == '__main__':
     app.run(debug=True)

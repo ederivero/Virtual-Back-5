@@ -1,3 +1,4 @@
+from sqlalchemy.orm import relationship
 from config.base_datos import bd
 from sqlalchemy import Column, types
 from sqlalchemy.schema import ForeignKey
@@ -36,6 +37,9 @@ class CategoriaModel(bd.Model):
         type_=types.Integer,
         nullable=False
     )
+    # el parametro cascade sirve para indicar que va a suceder cuando se elimine un padre, en este caso al poner 'all, delete', todos los hijos se van a eliminar consecuentemente
+    # https://docs.sqlalchemy.org/en/14/orm/cascades.html
+    conocimientos = relationship('ConocimientoModel', backref='categoriaConocimientos', cascade='all, delete')
 
     def __init__(self, nombre, orden, estado, usuario ):
         self.categoriaNombre = nombre
@@ -48,6 +52,10 @@ class CategoriaModel(bd.Model):
         bd.session.add(self)
         bd.session.commit()
     
+    def delete(self):
+        bd.session.delete(self)
+        bd.session.commit()
+
     def json(self):
         return {
             'cat_id': self.categoriaId,
