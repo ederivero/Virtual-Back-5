@@ -1,7 +1,7 @@
 // npm i express
 // npm i body-parser
 const express = require("express"); // esta es la forma de importar librerias y archivos en js
-const bodyParser = require('body-parser');
+const {json} = require('body-parser');
 const temario_router = require('../routes/Temario')
 class Server {
   constructor() {
@@ -13,7 +13,7 @@ class Server {
     this.rutas();
   }
   configurarBodyParser(){
-    this.app.use(bodyParser.json())
+    this.app.use(json())
   }
   rutas(){
       // encargado de configurar todas las rutas de mi aplicacion
