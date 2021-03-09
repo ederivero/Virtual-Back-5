@@ -1,5 +1,6 @@
 const express = require('express');
 const {json} = require('body-parser');
+const {conexion} = require('./Sequelize');
 
 module.exports = class Server{
     constructor(){
@@ -33,8 +34,16 @@ module.exports = class Server{
         })
     }
     start(){
-        this.app.listen(this.puerto, ()=>{
+        this.app.listen(this.puerto, async()=>{
             console.log(`Servidor corriendo exitosamente en el puerto ${this.puerto}`);
+            try {
+                let respuesta = await conexion.sync()
+                // console.log(respuesta.config)
+                console.log('Base de datos sincronizada correctamente')
+                
+            } catch (error) {
+                console.log(error)
+            }
         })
     }
 }
