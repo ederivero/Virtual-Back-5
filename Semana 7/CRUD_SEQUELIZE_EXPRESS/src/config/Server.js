@@ -21,6 +21,7 @@ module.exports = class Server{
             res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
             // Access-Control-Allow-Methods => sirve para indicar que metodos pueden acceder a mi API
             res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+            // si todo cumple con lo solicitado pasara al siguiente controlador
             next()
         })
     }
