@@ -3,7 +3,6 @@ const { Sequelize } = require("sequelize");
 // 1ra forma es usando la URI
 // const conexion = new Sequelize("mysql://usuario:password@host:puerto/base_datos",
 //   {
-//     dialect: "mysql",
 //     timezone: "-05:00",
 //     dialectOptions: {
 //       // sirve para que al momento de mostrar fechas, automaticamente las vuelva string y no tener que hacer la conversion manual como en flask
@@ -29,7 +28,7 @@ const conexion = new Sequelize(
   }
 );
 
-/* aqui van a ir las declaraciones de los modelos */
+// module.exports = conexion
 
 module.exports={
     conexion
