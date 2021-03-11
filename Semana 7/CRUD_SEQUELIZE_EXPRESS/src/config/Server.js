@@ -8,7 +8,8 @@ const cabecera_model = require("../models/Cabecera");
 const producto_model = require("../models/Producto");
 const detalle_model = require("../models/Detalle");
 const promocion_model = require("../models/Promocion");
-const categoria_router = require("../routes/Categoria")
+const categoria_router = require("../routes/Categoria");
+const producto_router = require("../routes/Producto");
 module.exports = class Server {
   constructor() {
     this.app = express();
@@ -40,6 +41,7 @@ module.exports = class Server {
       });
     });
     this.app.use(categoria_router)
+    this.app.use(producto_router)
   }
   crearTablas() {
     // si usamos algun parametro del sync en la conexion se ejecutara para todas los modelos que tengamos registrado en nuestro proyecto (CUIDADO!!!)

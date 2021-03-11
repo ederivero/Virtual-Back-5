@@ -1,5 +1,5 @@
 const Categoria = require("../models/Categoria")();
-
+const { Op } = require('sequelize');
 // CREATE
 const crearCategoria = async (req, res) => {
   // Si queremos registrar los datos tal y como nos llega del front usamos el metodo create, si queremos modificar o validar primero usamos dos pasos que es .build() y luego el .save()
@@ -105,10 +105,38 @@ const eliminarCategoriaPorId = async (req, res) => {
   })
 };
 
+// Listar las categorias segun una coincidencia por el nombre
+const listarCategoriasLikeName = async(req, res)=>{
+    // para usar parametros dinamicos (no lo indicamos en la ruta) usamos el query el cual va a capturar todos los parametros y lo mostrara en un JSON
+    const { nombre } = req.query;
+    // SELECT CAT_NOMBRE FROM T_CATEGORIA WHERE CAT_NOMBRE LIKE  %NOMBRE%
+    const resultado = await Categoria.findAll({
+        where:{
+            categoriaNombre: {
+                [Op.like] : '%'+nombre+'%'
+            }
+        },
+        /*
+        attributes: ['categoriaNombre'], // para definir que columnas queremos mostrar
+        attributes: { // para excluir que columnas no queremos devolver
+
+            exclude : ['categoriaId']
+        }
+        */
+    })
+    console.log(resultado);
+    return res.json({
+        success: true,
+        content: resultado
+    })
+}
+
+
 module.exports = {
   crearCategoria,
   devolverCategorias,
   devolverCategoriaPorId,
   editarCategoriaPorId,
-  eliminarCategoriaPorId
+  eliminarCategoriaPorId,
+  listarCategoriasLikeName
 };
