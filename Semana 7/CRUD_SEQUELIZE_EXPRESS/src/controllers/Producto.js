@@ -1,4 +1,4 @@
-const { Producto } = require("../config/Creacion");
+const { Producto } = require("../config/Relaciones");
 
 const crearProducto = async (req, res) => {
   const nuevoProducto = await Producto.create(req.body).catch((error) =>
