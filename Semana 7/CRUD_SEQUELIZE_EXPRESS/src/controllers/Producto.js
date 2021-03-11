@@ -1,4 +1,4 @@
-const Producto = require("../models/Producto")();
+const { Producto } = require("../config/Creacion");
 
 const crearProducto = async (req, res) => {
   const nuevoProducto = await Producto.create(req.body).catch((error) =>
@@ -9,12 +9,12 @@ const crearProducto = async (req, res) => {
     })
   );
   return res.status(201).json({
-      success: true,
-      content: nuevoProducto,
-      message: 'Producto creado exitosamente'
-  })
+    success: true,
+    content: nuevoProducto,
+    message: "Producto creado exitosamente",
+  });
 };
 
 module.exports = {
-    crearProducto
-}
+  crearProducto,
+};

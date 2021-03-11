@@ -1,4 +1,4 @@
-const Categoria = require("../models/Categoria")();
+const {Categoria} = require("../config/Creacion");
 const { Op } = require('sequelize');
 // CREATE
 const crearCategoria = async (req, res) => {
