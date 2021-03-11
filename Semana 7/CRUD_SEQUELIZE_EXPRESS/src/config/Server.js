@@ -8,6 +8,7 @@ const cabecera_model = require("../models/Cabecera");
 const producto_model = require("../models/Producto");
 const detalle_model = require("../models/Detalle");
 const promocion_model = require("../models/Promocion");
+const categoria_router = require("../routes/Categoria")
 module.exports = class Server {
   constructor() {
     this.app = express();
@@ -38,6 +39,7 @@ module.exports = class Server {
         message: "Bienvenido a mi API 😎",
       });
     });
+    this.app.use(categoria_router)
   }
   crearTablas() {
     // si usamos algun parametro del sync en la conexion se ejecutara para todas los modelos que tengamos registrado en nuestro proyecto (CUIDADO!!!)
@@ -94,7 +96,7 @@ module.exports = class Server {
       try {
         this.crearTablas();
         // el metodo sync es el encargado de hacer la validacion entre mi proyecto y mi bd y verificar que todas las tablas que tengo en mi proyecto esten presentes en la bd
-        let respuesta = await conexion.sync({force: true});
+        let respuesta = await conexion.sync();
         // console.log(respuesta.config)
         console.log("Base de datos sincronizada correctamente");
       } catch (error) {
