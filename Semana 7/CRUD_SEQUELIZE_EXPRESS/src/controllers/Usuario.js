@@ -25,9 +25,10 @@ const login = async (req, res) => {
     console.log(resultado);
     if (resultado) {
       // devolvemos la token
+      const token = usuario.generarJWT();
       return res.json({
         success: true,
-        content: null,
+        content: token,
         message: "Bievenido!!",
       });
     } else {
