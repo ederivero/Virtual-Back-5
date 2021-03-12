@@ -51,7 +51,10 @@ Producto.hasMany(Promocion, {
   foreignKey: { name: "prod_id", allowNull: false },
 });
 Promocion.belongsTo(Producto, { foreignKey: "prod_id" });
-
+// asi elimino un solo modelo
+// Promocion.drop();
+// asi reseteo todos sus campos (pierdo la informacion) de un unico modelo
+// Promocion.sync({force :true })
 module.exports = {
   Categoria,
   Cliente,
