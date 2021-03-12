@@ -3,6 +3,8 @@ const { json } = require("body-parser");
 const { conexion } = require("./Sequelize");
 const categoria_router = require("../routes/Categoria");
 const producto_router = require("../routes/Producto");
+const promocion_router = require("../routes/Promocion");
+
 module.exports = class Server {
   constructor() {
     this.app = express();
@@ -33,8 +35,9 @@ module.exports = class Server {
         message: "Bienvenido a mi API 😎",
       });
     });
-    this.app.use(categoria_router)
-    this.app.use(producto_router)
+    this.app.use(categoria_router);
+    this.app.use(producto_router);
+    this.app.use(promocion_router);
   }
   start() {
     this.app.listen(this.puerto, async () => {

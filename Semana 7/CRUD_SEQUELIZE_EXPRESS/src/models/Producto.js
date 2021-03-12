@@ -3,7 +3,7 @@ const { conexion } = require("../config/Sequelize");
 
 module.exports = producto_model = () => {
   return conexion.define(
-    "producto",
+    "productos",
     {
       productoId: {
         primaryKey: true,
@@ -18,8 +18,8 @@ module.exports = producto_model = () => {
         allowNull: false,
         field: "prod_nombre",
         validate: {
-            len: [5,45]
-        }
+          len: [5, 45],
+        },
       },
       productoPrecio: {
         type: DataTypes.FLOAT(5, 2),
@@ -30,9 +30,9 @@ module.exports = producto_model = () => {
         type: DataTypes.INTEGER,
         allowNull: false,
         field: "prod_cantidad",
-        validate:{
-            min: 0
-        }
+        validate: {
+          min: 0,
+        },
       },
       productoFechaVencimiento: {
         // DATEONLY => solamente da YYYY/MM/DD y DATE => YYYY/MM/DD HH:MM:SS
@@ -40,14 +40,14 @@ module.exports = producto_model = () => {
         allowNull: false,
         field: "prod_fecvec",
         validate: {
-            isAfter: '2022-01-01'
-        }
+          isAfter: "2022-01-01",
+        },
       },
       productoEstado: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         field: "prod_estado",
-        defaultValue: true
+        defaultValue: true,
       },
     },
     {
