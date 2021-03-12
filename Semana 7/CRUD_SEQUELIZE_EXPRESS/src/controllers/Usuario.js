@@ -18,9 +18,23 @@ const registro = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   // 1. validar si el correo existe
+  const usuario = await Usuario.findOne({ where: { usuarioEmail: email } });
+  console.log(usuario);
+  if (usuario) {
+    // 2. validar si la contraseña existe
+  } else {
+    return res.status(404).json({
+      success: false,
+      content: null,
+      message: "Usuario o contraseña incorrectos",
+    });
+  }
   // await Usuario.find...
-  // 2. validar si la contraseña existe
   // usuarioEncontrado.validarPassword(password) <- retorna un booleano (V -> si es, F -> si no es)
+  return res.json({
+    success: true,
+    content: null,
+  });
 };
 
 module.exports = {
