@@ -6,6 +6,7 @@ const producto_router = require("../routes/Producto");
 const promocion_router = require("../routes/Promocion");
 const usuario_router = require("../routes/Usuario");
 const cliente_router = require("../routes/Cliente");
+const venta_router = require("../routes/Venta");
 
 module.exports = class Server {
   constructor() {
@@ -42,6 +43,7 @@ module.exports = class Server {
     this.app.use(promocion_router);
     this.app.use(usuario_router);
     this.app.use(cliente_router);
+    this.app.use(venta_router);
   }
   start() {
     this.app.listen(this.puerto, async () => {
