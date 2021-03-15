@@ -13,10 +13,20 @@ const crearVenta = async (req, res) => {
     });
     // ahora iteramos todas las posibles promociones del producto (las vigentes y no vigentes)
     const { promociones } = productoEncontrado;
-    promociones.forEach((promocion) => {
-      console.log(promocion.toJSON());
-    });
+    console.log("Producto encontrado");
     console.log(productoEncontrado.toJSON());
+    const fechaActual = new Date();
+    let promocionActiva;
+    promociones.forEach((promocion) => {
+      if (fechaActual < promocion.promocionFechaHasta) {
+        console.log("sige vigente la promo!!");
+        promocionActiva = promocion;
+      }
+      console.log(promocion.promocionFechaHasta);
+      console.log(promocion.toJSON());
+      console.log("La promocion activa es:");
+    });
+    console.log(promocionActiva);
     // TAREA!!!: indicar si es que tiene promocion activa dar ese precio, caso contrario dar el precio original del producto
   });
 
