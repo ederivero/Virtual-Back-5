@@ -54,14 +54,17 @@ const crearVenta = async (req, res) => {
     console.log("La promocion activa es:");
     console.log(promocionActiva);
     // aqui creamos el detalle de la venta
-    const detalleVenta = await Detalle.create({
-      detalleCantidad: cantidad,
-      detallePrecioUnitario: promocionActiva
-        ? promocionActiva.promocionDescuento
-        : productoEncontrado.productoPrecio,
-      prod_id: id,
-      cab_id: cabeceraVenta.cabeceraId,
-    });
+    const detalleVenta = await Detalle.create(
+      {
+        detalleCantidad: cantidad,
+        detallePrecioUnitario: promocionActiva
+          ? promocionActiva.promocionDescuento
+          : productoEncontrado.productoPrecio,
+        prod_id: id,
+        cab_id: cabeceraVenta.cabeceraId,
+      },
+      { transaction: transaccion }
+    );
     // ahora actualizo las cantidades de mi producto
     await Producto.update(
       {
