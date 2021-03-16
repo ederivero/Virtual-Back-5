@@ -17,7 +17,7 @@ module.exports = cabecera_model = () => {
         type: DataTypes.DATEONLY,
         allowNull: false,
         field: "cab_fecha",
-        defaultValue: DataTypes.NOW,
+        defaultValue: DataTypes.NOW, // agarra la fecha actual del servidor y la pone como valor por defecto
       },
       cabeceraSerie: {
         type: DataTypes.STRING(4),

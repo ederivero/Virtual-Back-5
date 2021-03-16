@@ -28,8 +28,8 @@ const crearVenta = async (req, res) => {
 
     // 1. ver si el producto tiene promocion vigente
 
-    productos.forEach(async (producto) => {
-      const { id, cantidad } = producto;
+    for (const key in productos) {
+      const { id, cantidad } = productos[key];
       const productoEncontrado = await Producto.findByPk(id, {
         include: {
           // dentro del modelo promocion solamente quiero la primera coincidencia de la promocion mediante el ordenamiento de la columna promocionFechaHasta de manera descendente
@@ -44,18 +44,19 @@ const crearVenta = async (req, res) => {
       console.log(productoEncontrado.toJSON());
       const fechaActual = new Date();
       let promocionActiva;
-      promociones.forEach((promocion) => {
-        if (fechaActual < promocion.promocionFechaHasta) {
+      for (const key1 in promociones) {
+        if (fechaActual < promociones[key1].promocionFechaHasta) {
           console.log("sige vigente la promo!!");
-          promocionActiva = promocion;
+          promocionActiva = promociones[key1];
           // aca lo haria
-          const descuentoTemporal = promocion.promocionDescuento * cantidad;
+          const descuentoTemporal =
+            promociones[key1].promocionDescuento * cantidad;
           const precioNormal = productoEncontrado.productoPrecio * cantidad;
           descuentoTotal += precioNormal - descuentoTemporal;
           // descuentoTotal = descuentoTotal + (precioNormal - descuentoTemporal)
         }
-        console.log(promocion.toJSON());
-      });
+        console.log(promociones[key1].toJSON());
+      }
       console.log("La promocion activa es:");
       console.log(promocionActiva);
       // aqui creamos el detalle de la venta
@@ -83,7 +84,7 @@ const crearVenta = async (req, res) => {
         }
       );
       subTotal += detalleVenta.detallePrecioUnitario * cantidad;
-    });
+    }
     // actualizamos la cabecera de la venta con los campos de total, subtotal y descuento
     await CabeceraNota.update(
       {
