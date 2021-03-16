@@ -16,6 +16,7 @@ module.exports = cabecera_model = () => {
         type: DataTypes.DATEONLY,
         allowNull: false,
         field: "cab_fecha",
+        defaultValue: DataTypes.NOW,
       },
       cabeceraSerie: {
         type: DataTypes.STRING(4),
