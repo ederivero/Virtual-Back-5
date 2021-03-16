@@ -40,13 +40,10 @@ const crearVenta = async (req, res) => {
       });
       // ahora iteramos todas las posibles promociones del producto (las vigentes y no vigentes)
       const { promociones } = productoEncontrado;
-      console.log("Producto encontrado");
-      console.log(productoEncontrado.toJSON());
       const fechaActual = new Date();
       let promocionActiva;
       for (const key1 in promociones) {
         if (fechaActual < promociones[key1].promocionFechaHasta) {
-          console.log("sige vigente la promo!!");
           promocionActiva = promociones[key1];
           // aca lo haria
           const descuentoTemporal =
@@ -55,10 +52,7 @@ const crearVenta = async (req, res) => {
           descuentoTotal += precioNormal - descuentoTemporal;
           // descuentoTotal = descuentoTotal + (precioNormal - descuentoTemporal)
         }
-        console.log(promociones[key1].toJSON());
       }
-      console.log("La promocion activa es:");
-      console.log(promocionActiva);
       // aqui creamos el detalle de la venta
       const detalleVenta = await Detalle.create(
         {
