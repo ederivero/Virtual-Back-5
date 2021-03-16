@@ -21,72 +21,102 @@ const crearVenta = async (req, res) => {
     { transaction: transaccion }
   );
   let descuentoTotal = 0;
+  let subTotal = 0;
 
   // 1. ver si el producto tiene promocion vigente
-  productos.forEach(async (producto) => {
-    const { id, cantidad } = producto;
-    const productoEncontrado = await Producto.findByPk(id, {
-      include: {
-        // dentro del modelo promocion solamente quiero la primera coincidencia de la promocion mediante el ordenamiento de la columna promocionFechaHasta de manera descendente
-        model: Promocion,
-        order: [["promocionFechaHasta", "DESC"]],
-        limit: 1,
-      },
+  try {
+    productos.forEach(async (producto) => {
+      const { id, cantidad } = producto;
+      const productoEncontrado = await Producto.findByPk(id, {
+        include: {
+          // dentro del modelo promocion solamente quiero la primera coincidencia de la promocion mediante el ordenamiento de la columna promocionFechaHasta de manera descendente
+          model: Promocion,
+          order: [["promocionFechaHasta", "DESC"]],
+          limit: 1,
+        },
+      });
+      // ahora iteramos todas las posibles promociones del producto (las vigentes y no vigentes)
+      const { promociones } = productoEncontrado;
+      console.log("Producto encontrado");
+      console.log(productoEncontrado.toJSON());
+      const fechaActual = new Date();
+      let promocionActiva;
+      promociones.forEach((promocion) => {
+        if (fechaActual < promocion.promocionFechaHasta) {
+          console.log("sige vigente la promo!!");
+          promocionActiva = promocion;
+          // aca lo haria
+          const descuentoTemporal = promocion.promocionDescuento * cantidad;
+          const precioNormal = productoEncontrado.productoPrecio * cantidad;
+          descuentoTotal += precioNormal - descuentoTemporal;
+          // descuentoTotal = descuentoTotal + (precioNormal - descuentoTemporal)
+        }
+        console.log(promocion.toJSON());
+      });
+      console.log("La promocion activa es:");
+      console.log(promocionActiva);
+      // aqui creamos el detalle de la venta
+      const detalleVenta = await Detalle.create(
+        {
+          detalleCantidad: cantidad,
+          detallePrecioUnitario: promocionActiva
+            ? promocionActiva.promocionDescuento
+            : productoEncontrado.productoPrecio,
+          prod_id: id,
+          cab_id: cabeceraVenta.cabeceraId,
+        },
+        { transaction: transaccion }
+      );
+      // ahora actualizo las cantidades de mi producto
+      await Producto.update(
+        {
+          productoCantidad: productoEncontrado.productoCantidad - cantidad,
+        },
+        {
+          where: {
+            productoId: id,
+          },
+          transaction: transaccion,
+        }
+      );
+      subTotal += detalleVenta.detallePrecioUnitario * cantidad;
     });
-    // ahora iteramos todas las posibles promociones del producto (las vigentes y no vigentes)
-    const { promociones } = productoEncontrado;
-    console.log("Producto encontrado");
-    console.log(productoEncontrado.toJSON());
-    const fechaActual = new Date();
-    let promocionActiva;
-    promociones.forEach((promocion) => {
-      if (fechaActual < promocion.promocionFechaHasta) {
-        console.log("sige vigente la promo!!");
-        promocionActiva = promocion;
-        // aca lo haria
-        const descuentoTemporal = promocion.promocionDescuento * cantidad;
-        const precioNormal = productoEncontrado.productoPrecio * cantidad;
-        descuentoTotal += precioNormal - descuentoTemporal;
-        // descuentoTotal = descuentoTotal + (precioNormal - descuentoTemporal)
-      }
-      console.log(promocion.toJSON());
-    });
-    console.log("La promocion activa es:");
-    console.log(promocionActiva);
-    // aqui creamos el detalle de la venta
-    const detalleVenta = await Detalle.create(
+    // actualizamos la cabecera de la venta con los campos de total, subtotal y descuento
+    await CabeceraNota.update(
       {
-        detalleCantidad: cantidad,
-        detallePrecioUnitario: promocionActiva
-          ? promocionActiva.promocionDescuento
-          : productoEncontrado.productoPrecio,
-        prod_id: id,
-        cab_id: cabeceraVenta.cabeceraId,
-      },
-      { transaction: transaccion }
-    );
-    // ahora actualizo las cantidades de mi producto
-    await Producto.update(
-      {
-        productoCantidad: productoEncontrado.productoCantidad - cantidad,
+        cabeceraTotal: subTotal,
+        cabeceraSubTotal: subTotal + descuentoTotal,
+        cabeceraDescuento: descuentoTotal,
       },
       {
         where: {
-          productoId: id,
+          cabeceraId: cabeceraVenta.cabeceraId,
         },
         transaction: transaccion,
       }
     );
-
-    // TAREA!!!: indicar si es que tiene promocion activa dar ese precio, caso contrario dar el precio original del producto
-  });
+    // si todo esta correctamente y no hubo ningun error, se procedera a guardar los cambios en la bd
+    await transaccion.commit();
+    return res.status(201).json({
+      success: true,
+      content: CabeceraNota,
+      message: "Se genero la venta exitosamente",
+    });
+  } catch (error) {
+    // si hubo algun error en cualquiera de las escrituras en la bd, saltará al catch y por ende ningun cambio se guardara en la bd gracias al rollback
+    await transaccion.rollback();
+    return res.status(500).json({
+      success: false,
+      content: error,
+      message: "Error al generar la venta",
+    });
+  }
 
   // 2. crear el detalle de la venta
   // 3. restar la cantidad del producto del inventario
   // 4. Agregar el total a la cabecera de la venta
   // 5. Generar la cabecera
   // NOTA: se recomienda solamente usar la transaccion en sentencias que modifique nuestra bd (insert, delete, update)
-  return res.send("ok");
 };
 
 module.exports = {
