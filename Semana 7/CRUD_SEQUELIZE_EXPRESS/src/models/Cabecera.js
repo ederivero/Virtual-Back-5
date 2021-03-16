@@ -11,6 +11,7 @@ module.exports = cabecera_model = () => {
         field: "cab_id",
         primaryKey: true,
         unique: true,
+        autoIncrement: true,
       },
       cabeceraFecha: {
         type: DataTypes.DATEONLY,

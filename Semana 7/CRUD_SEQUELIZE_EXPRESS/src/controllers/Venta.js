@@ -7,24 +7,27 @@ const {
 } = require("../config/Relaciones");
 
 const crearVenta = async (req, res) => {
-  const { productos } = req.body;
+  const { productos, usuario, cliente, serie } = req.body;
   // primero defino la transaccion
   const transaccion = await conexion.transaction();
   // creamos nuestra cabecera de la venta
-  const cabeceraVenta = await CabeceraNota.create(
-    {
-      cabeceraSerie: "BBB1",
-      cabeceraTotal: 0.0,
-      cabeceraDescuento: 0.0,
-      cabeceraSubTotal: 0.0,
-    },
-    { transaction: transaccion }
-  );
-  let descuentoTotal = 0;
-  let subTotal = 0;
-
-  // 1. ver si el producto tiene promocion vigente
   try {
+    const cabeceraVenta = await CabeceraNota.create(
+      {
+        cabeceraSerie: serie,
+        cabeceraTotal: 0.0,
+        cabeceraDescuento: 0.0,
+        cabeceraSubTotal: 0.0,
+        usu_id: usuario,
+        cli_dni: cliente,
+      },
+      { transaction: transaccion }
+    );
+    let descuentoTotal = 0;
+    let subTotal = 0;
+
+    // 1. ver si el producto tiene promocion vigente
+
     productos.forEach(async (producto) => {
       const { id, cantidad } = producto;
       const productoEncontrado = await Producto.findByPk(id, {
