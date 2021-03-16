@@ -1,6 +1,9 @@
 const express = require("express");
 const { json } = require("body-parser");
 const { conexion } = require("./Sequelize");
+const { serve, setup } = require("swagger-ui-express");
+// https://www.npmjs.com/package/swagger-ui-express
+const documentacion = require("../../docs/documentacionSwagger.json");
 const categoria_router = require("../routes/Categoria");
 const producto_router = require("../routes/Producto");
 const promocion_router = require("../routes/Promocion");
@@ -38,6 +41,7 @@ module.exports = class Server {
         message: "Bienvenido a mi API 😎",
       });
     });
+    this.app.use("/docs", serve, setup(documentacion));
     this.app.use(categoria_router);
     this.app.use(producto_router);
     this.app.use(promocion_router);

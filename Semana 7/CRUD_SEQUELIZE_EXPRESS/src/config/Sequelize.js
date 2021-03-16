@@ -31,6 +31,6 @@ const conexion = new Sequelize(
 
 // module.exports = conexion
 
-module.exports={
-    conexion
-}
+module.exports = {
+  conexion,
+};
