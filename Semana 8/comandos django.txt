@@ -1,0 +1,5 @@
+django-admin startproject nombreproyecto => crea un nuevo proyecto (si le agregamos . no creara la carpeta raiz)
+py manage.py showmigrations => sirve para ver las migraciones de mi proyecto
+py manage.py migrate => ejecuta todas las migraciones que aun no han sido registradas en la bd
+
+NOTA: adicional al showmigrations y migrate se puede especificar que aplicacion queremos migrar o visualizar indicandola
