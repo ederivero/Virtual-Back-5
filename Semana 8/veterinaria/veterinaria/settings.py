@@ -117,8 +117,9 @@ TIME_ZONE = 'America/Lima'  # UTC-5
 USE_I18N = True
 
 USE_L10N = True
-
-USE_TZ = True
+# https://docs.djangoproject.com/en/3.1/topics/i18n/timezones/
+# NOTA: si cambiamos el utc, para que se respete en la bd tenemos que deshabilitar :
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
