@@ -5,6 +5,33 @@ from django.db import models
 # https://docs.djangoproject.com/en/3.1/ref/models/fields/
 # Para ver todos los tipos de datos que se pueden usar en django:
 # https://docs.djangoproject.com/en/3.1/ref/models/fields/#field-types
+
+class EspecieModel(models.Model):
+    especieId = models.AutoField(
+        primary_key=True,
+        unique=True,
+        null=False,
+        db_column='especie_id'
+    )
+    especieNombre = models.CharField(
+        max_length=45,
+        null=False,
+        db_column="especie_nombre"
+    )
+
+    def __str__(self):
+        """Sirve para modificar la forma en la cual se mostrara el objeto por consola"""
+        return self.especieNombre
+
+    class Meta:
+        db_table = 't_especie'
+        # los siguientes atributos solamente sirven si vamos a utilizar el panel administrativo
+        # es la forma en la cual se mostrara ese modelo en el panel administrativo
+        verbose_name = 'Especie'
+        # es la forma en la cual se mostrara el nombre en plural
+        # verbose_name_plural = 'Especies'
+
+
 class RazaModel(models.Model):
     # si yo no defino la primary key esta se creara automaticamente en mi bd con el nombre de columa <id>
     # solamente una columna por tabla puede ser autofield (autoincrementable)
@@ -24,25 +51,6 @@ class RazaModel(models.Model):
         db_column='raza_nombre',
         verbose_name='Nombre de la raza'
     )
-    # para definir algunas opciones extras como el nombre de la tabla, el ordenamiento de los resultados y modificar opciones de visualizacion en el panel administrativo se crea una clase Meta que sirve para pasar los metadatos al padre (a la clase que hemos heredado)
-
-    class Meta:
-        # asi se cambia el nombre de la tabla
-        db_table = 't_raza'
-
-
-class TipoModel(models.Model):
-    tipoId = models.AutoField(
-        primary_key=True,
-        unique=True,
-        null=False,
-        db_column='tipo_id'
-    )
-    tipoNombre = models.CharField(
-        max_length=45,
-        null=False,
-        db_column="tipo_nombre"
-    )
     # al momento de eliminar un padre, tenemos que indicar que va a pasar con sus hijos:
     # CASCADE => permite eliminar al padre y consecuentemente eliminar a los hijos tambien.
     # PROTECT => no permite eliminar al padre mientras que tenga hijos (primero se eliminaria a los hijos y luego al padre)
@@ -50,27 +58,25 @@ class TipoModel(models.Model):
     # DO_NOTHING => permite eliminar al padre y deja su pk sin modificar en los hijos, esto generara una mala integridad de los datos ya que los hijos seguiran apuntando al padre pero este ya no existe
     # RESTRICT => no permite la eliminacion y lanzara un error de tipo RestrictedError, muy similar al PROTECT
     # https://docs.djangoproject.com/en/3.1/ref/models/fields/#django.db.models.ForeignKey.on_delete
-    raza = models.ForeignKey(
-        to=RazaModel,
+    especie = models.ForeignKey(
+        to=EspecieModel,
         on_delete=models.PROTECT,
         # el related_name sirve para cuando querramos ingresar a su relacion inversa
-        related_name='tiposRaza',
-        db_column='raza_id',
-        verbose_name='Raza',
-        help_text='Id de la raza'
+        related_name='especiesRaza',
+        db_column='especie_id',
+        verbose_name='Especie',
+        help_text='Id de la especie'
     )
 
     def __str__(self):
-        """Sirve para modificar la forma en la cual se mostrara el objeto por consola"""
-        return self.tipoNombre
+        return self.razaNombre
+
+    # para definir algunas opciones extras como el nombre de la tabla, el ordenamiento de los resultados y modificar opciones de visualizacion en el panel administrativo se crea una clase Meta que sirve para pasar los metadatos al padre (a la clase que hemos heredado)
 
     class Meta:
-        db_table = 't_tipo'
-        # los siguientes atributos solamente sirven si vamos a utilizar el panel administrativo
-        # es la forma en la cual se mostrara ese modelo en el panel administrativo
-        verbose_name = 'Tipo'
-        # es la forma en la cual se mostrara el nombre en plural
-        verbose_name_plural = 'Tipos'
+        # asi se cambia el nombre de la tabla
+        db_table = 't_raza'
+        verbose_name = 'raza'
 
 
 class ClienteModel(models.Model):
@@ -142,11 +148,11 @@ class MascotaModel(models.Model):
         related_name='mascotasCliente',
         null=False
     )
-    tipo = models.ForeignKey(
-        to=TipoModel,
+    raza = models.ForeignKey(
+        to=RazaModel,
         on_delete=models.PROTECT,
-        db_column='tipo_id',
-        related_name='mascotasTipo',
+        db_column='raza_id',
+        related_name='mascotasRaza',
         null=False
     )
 
