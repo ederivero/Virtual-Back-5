@@ -179,6 +179,9 @@ class PromocionModel(models.Model):
         null=False
     )
 
+    def __str__(self):
+        return "La promocion es: {} y su estado es: {}".format(self.promocionDescripcion, self.promocionEstado)
+
     class Meta:
         db_table = 't_promocion'
         verbose_name = 'Promocion'
