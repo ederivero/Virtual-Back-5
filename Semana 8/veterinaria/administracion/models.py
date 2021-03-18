@@ -152,3 +152,60 @@ class MascotaModel(models.Model):
     class Meta:
         db_table = 't_mascota'
         verbose_name = 'Mascota'
+
+
+class PromocionModel(models.Model):
+    promocionId = models.AutoField(
+        primary_key=True,
+        db_column='promo_id',
+        unique=True,
+        null=False
+    )
+    promocionDescripcion = models.CharField(
+        max_length=45,
+        db_column='promo_descripcion',
+        null=False
+    )
+    promocionEstado = models.BooleanField(
+        default=True,
+        db_column='promo_estado',
+        null=False
+    )
+
+    class Meta:
+        db_table = 't_promocion'
+        verbose_name = 'Promocion'
+        verbose_name_plural = 'Promociones'
+
+
+class HistorialModel(models.Model):
+    historialId = models.AutoField(
+        primary_key=True,
+        db_column='historial_id',
+        null=False,
+        unique=True
+    )
+    historialCanje = models.BooleanField(
+        db_column='historial_canje',
+        default=True,
+        null=False
+    )
+    mascota = models.ForeignKey(
+        to=MascotaModel,
+        db_column='mascota_id',
+        null=False,
+        on_delete=models.PROTECT,
+        related_name='historialesMascota'
+    )
+    promocion = models.ForeignKey(
+        to=PromocionModel,
+        db_column='promocion_id',
+        null=False,
+        on_delete=models.PROTECT,
+        related_name='historialesPromocion'
+    )
+
+    class Meta:
+        db_table = 't_historial'
+        verbose_name = 'Historial'
+        verbose_name_plural = 'Historiales'
