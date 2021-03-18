@@ -74,10 +74,11 @@ class TipoModel(models.Model):
 
 
 class ClienteModel(models.Model):
-    clienteDni = models.AutoField(
+    clienteDni = models.CharField(
         unique=True,
         null=False,
         primary_key=True,
+        max_length=9,
         db_column='cli_dni'
     )
     clienteNombre = models.CharField(
@@ -199,7 +200,7 @@ class HistorialModel(models.Model):
     )
     promocion = models.ForeignKey(
         to=PromocionModel,
-        db_column='promocion_id',
+        db_column='promo_id',
         null=False,
         on_delete=models.PROTECT,
         related_name='historialesPromocion'
