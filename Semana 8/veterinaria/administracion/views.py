@@ -30,7 +30,7 @@ class EspeciesController(ListCreateAPIView):
         respuesta = self.serializer_class(
             instance=self.get_queryset(), many=True)
         # la data es la informacion ya serializada que puede ser enviada al front
-        print(respuesta.data)
+        # print(respuesta.data)
         return Response(data={
             "success": True,
             "content": respuesta.data,
@@ -59,7 +59,7 @@ class EspeciesController(ListCreateAPIView):
                 "message": None
             }, status=201)
         else:
-            print(data.errors.get("especieNombre")[0])
+            # print(data.errors.get("especieNombre")[0])
             texto = "{} ya se encuentra registrado!".format(
                 request.data.get("especieNombre"))
             data.errors.get("especieNombre")[0] = texto
@@ -83,19 +83,46 @@ class EspecieController(RetrieveUpdateDestroyAPIView):
 
     def get(self, request, id):
         especie = self.get_queryset(id)
-        print(type(especie))
+        # print(type(especie))
         respuesta = self.serializer_class(instance=especie)
-        # indicar si el resultado de la busqueda es vacio mostrar un mensaje de not found con su estado correspondiente
-        if respuesta.data is not None:
-            print("no esta vacio")
-        return Response(data={
-            "success": True,
-            "content": respuesta.data,
-            "message": None
-        })
+        # indicar, si el resultado de la busqueda es vacio mostrar un mensaje de not found con su estado correspondiente
+        # el instance dara la instancia si es que tiene una y sino dara None (vacio)
+        # print(respuesta.instance)
+        # FORMA 1:
+        # respuesta.data.get("especieId")
+        # FORMA 2:
+        # respuesta.instance
+        # FORMA 3:
+        if especie:
+            return Response(data={
+                "success": True,
+                "content": respuesta.data,
+                "message": None
+            })
+        else:
+            return Response(data={
+                "success": True,
+                "content": None,
+                "message": "No se encontro la especie con ID {}".format(id,)
+            })
 
     def put(self, request, id):
-        pass
+        especie = self.get_queryset(id)
+        respuesta = self.serializer_class(instance=especie, data=request.data)
+        if respuesta.is_valid():
+            resultado = respuesta.update()
+            print(resultado)
+            return Response(data={
+                "success": True,
+                "content": None,
+                "message": "Se actualizo la especie exitosamente"
+            })
+        else:
+            return Response(data={
+                "success": False,
+                "content": respuesta.errors,
+                "message": "Data incorrecta"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
         pass

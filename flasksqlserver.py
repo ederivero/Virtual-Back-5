@@ -1,6 +1,6 @@
 # pip install flask
-# pip install pyodbc
 # pip install flask-sqlalchemy
+# pip install pyodbc
 from flask import Flask
 import urllib
 from flask_sqlalchemy import SQLAlchemy
