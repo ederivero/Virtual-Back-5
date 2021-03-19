@@ -19,10 +19,14 @@ class EspeciesController(ListCreateAPIView):
     # todo lo que concierne al parametro request => https://www.django-rest-framework.org/api-guide/requests/
     def get(self, request):
         # en el request se almacenan todos los datos que me manda el front (headers, body, cookies, etc)
-        print(self.queryset)
+        # print(self.queryset)
+        respuesta = self.serializer_class(
+            instance=self.get_queryset(), many=True)
+        # la data es la informacion ya serializada que puede ser enviada al front
+        print(respuesta.data)
         return Response(data={
             "success": True,
-            "content": None,
+            "content": respuesta.data,
             "message": None
         }, status=200)
 
