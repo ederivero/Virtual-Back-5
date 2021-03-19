@@ -4,4 +4,5 @@ py manage.py showmigrations [nombre_app] => sirve para ver las migraciones de mi
 py manage.py migrate [nombre_app] => ejecuta todas las migraciones que aun no han sido registradas en la bd
 py manage.py makemigrations [nombre_app] => crea las migraciones correspondientes del proyecto o de la aplicacion
 py manage.py createsuperuser => crea un super usuario para poder acceder al panel administrativo
+py manage.py shell => abre una terminal de python pero con todas las librerias de django para poder practicar con los modelos, serializers, views, etc..
 NOTA: adicional al showmigrations y migrate se puede especificar que aplicacion queremos migrar o visualizar indicandola

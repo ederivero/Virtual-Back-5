@@ -16,7 +16,9 @@ class EspecieModel(models.Model):
     especieNombre = models.CharField(
         max_length=45,
         null=False,
-        db_column="especie_nombre"
+        db_column="especie_nombre",
+        unique=True,
+        verbose_name="nombre"
     )
 
     def __str__(self):
@@ -27,7 +29,7 @@ class EspecieModel(models.Model):
         db_table = 't_especie'
         # los siguientes atributos solamente sirven si vamos a utilizar el panel administrativo
         # es la forma en la cual se mostrara ese modelo en el panel administrativo
-        verbose_name = 'Especie'
+        verbose_name = 'especie'
         # es la forma en la cual se mostrara el nombre en plural
         # verbose_name_plural = 'Especies'
 
