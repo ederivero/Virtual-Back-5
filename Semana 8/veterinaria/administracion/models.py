@@ -20,6 +20,11 @@ class EspecieModel(models.Model):
         unique=True,
         verbose_name="nombre"
     )
+    especieEstado = models.BooleanField(
+        default=True,
+        db_column="especie_estado",
+        null=False
+    )
 
     def __str__(self):
         """Sirve para modificar la forma en la cual se mostrara el objeto por consola"""

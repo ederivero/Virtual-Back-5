@@ -110,11 +110,9 @@ class EspecieController(RetrieveUpdateDestroyAPIView):
         especie = self.get_queryset(id)
         respuesta = self.serializer_class(instance=especie, data=request.data)
         if respuesta.is_valid():
-            resultado = respuesta.update()
-            print(resultado)
             return Response(data={
                 "success": True,
-                "content": None,
+                "content": respuesta.update(),
                 "message": "Se actualizo la especie exitosamente"
             })
         else:
@@ -125,4 +123,43 @@ class EspecieController(RetrieveUpdateDestroyAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        pass
+        # 1. Agregar una columna en la tabla especie que sea "especieEstado" que sea boolean y que x defecto sea true y no puede ser vacio ✔
+        # 2. Modificar el metodo update para que admita el estado ✔
+        # 3. al momento de hacer delete NO ELIMINAR la especie sino cambiar su estado a False (inhabilitado) ✔
+        # 4. Indicar al usuario que se inhabilito correctamente la especie ✔
+        # NOTA: hacer la eliminacion en el serializer (crear un metodo para ello)
+        # screenshot de la tabla especie
+        # screenshot del serializer (del metodo)
+        # screenshot del metodo delete
+        # Practica # 2
+        # si el id es incorrecto no pasar a la fase de "eliminacion"
+        # hay dos formas: 1. hacerlo en el controller como el update y la 2. es hacerlo en el metodo delete
+        # especie = self.get_queryset(id)
+        # if especie:
+        #     respuesta = self.serializer_class(instance=especie)
+        #     respuesta.delete()
+        #     return Response(data={
+        #         "success": True,
+        #         "content": None,
+        #         "message": "se inhabilito la especie exitosamente"
+        #     })
+        # else:
+        #     return Response(data={
+        #         "success": False,
+        #         "content": None,
+        #         "message": "Especie no existe"
+        #     })
+        # solucion 2
+        respuesta = self.serializer_class(instance=self.get_queryset(id))
+        if respuesta.delete():
+            return Response(data={
+                "success": True,
+                "content": None,
+                "message": "se inhabilito la especie exitosamente"
+            })
+        else:
+            return Response(data={
+                "success": False,
+                "content": None,
+                "message": "Especie no existe"
+            })
