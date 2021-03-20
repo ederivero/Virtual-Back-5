@@ -55,8 +55,21 @@ class EspecieSerializer(serializers.ModelSerializer):
         # exclude = ('especieId',)
 
 
-class RazaSerializer(serializers.ModelSerializer):
-    especie = EspecieSerializer(read_only=True)
+class EspecieVistaSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EspecieModel
+        exclude = ['especieEstado']
+
+
+class RazaEscrituraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RazaModel
+        fields = '__all__'
+
+
+class RazaVistaSerializer(serializers.ModelSerializer):
+    especie = EspecieVistaSerializer()
 
     class Meta:
         model = RazaModel

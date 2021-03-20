@@ -1,5 +1,5 @@
 from .models import EspecieModel, RazaModel
-from .serializers import EspecieSerializer, RazaSerializer
+from .serializers import EspecieSerializer, RazaEscrituraSerializer, RazaVistaSerializer
 # las vistas genericas sirven para ya no hacer mucho codigo pero no estamos estandarizando las respuestas de nuestra api (si da un error lanzara un status 500 sin ningun mensaje), si hay info retornara una lista o un objeto, si no mandamos la data correctamente solamente nos mostrara el mensaje de error
 # Obviamente estas vistas genericas se pueden modificar y se pueden alterar segun nuestros requerimientos
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -167,11 +167,12 @@ class EspecieController(RetrieveUpdateDestroyAPIView):
 
 class RazasController(ListCreateAPIView):
     queryset = RazaModel.objects.all()
-    serializer_class = RazaSerializer
+    serializer_class = RazaEscrituraSerializer
 
     def post(self, request):
         respuesta = self.serializer_class(data=request.data)
         if respuesta.is_valid() is True:
+            print(respuesta.validated_data)
             respuesta.save()
             return Response(data={
                 "success": True,
@@ -196,7 +197,7 @@ class RazasController(ListCreateAPIView):
 
     def get(self, request):
         # solamente me muestre las razas con especies habilitadas
-        respuesta = self.serializer_class(
+        respuesta = RazaVistaSerializer(
             instance=self.filtrar_razas(), many=True)
         # print(self.get_queryset()[1].especie)
         return Response({
@@ -204,3 +205,7 @@ class RazasController(ListCreateAPIView):
             "content": respuesta.data,
             "message": None
         })
+
+
+class MascotasController(ListCreateAPIView):
+    pass
