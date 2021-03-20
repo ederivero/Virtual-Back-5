@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import EspecieModel
+from .models import EspecieModel, RazaModel
+
+
+class MostrarRazaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RazaModel
+        fields = '__all__'
 
 
 class EspecieSerializer(serializers.ModelSerializer):
@@ -9,6 +15,8 @@ class EspecieSerializer(serializers.ModelSerializer):
     #     especie.save()
     #     self.instance = especie
     #     return especie
+    razas = MostrarRazaSerializer(
+        source="especiesRaza", many=True, read_only=True)
 
     def update(self):
         # el atributo instance es la instancia de la clase y me da acceso a todos los atributos de la clase
@@ -45,3 +53,11 @@ class EspecieSerializer(serializers.ModelSerializer):
         # NOTA: no se pueden usar los dos a la vez ya que genera ambiguedad
         # NOTA2: la unica forma de declara el exclude es mediante LIST, TUPLE ya que no admite el valor de __all__ si hacemos esto estariamos excluyendo todos los atributos del modelo
         # exclude = ('especieId',)
+
+
+class RazaSerializer(serializers.ModelSerializer):
+    especie = EspecieSerializer(read_only=True)
+
+    class Meta:
+        model = RazaModel
+        fields = '__all__'

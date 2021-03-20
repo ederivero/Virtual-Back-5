@@ -1,6 +1,5 @@
-from django.http import response
-from .models import EspecieModel
-from .serializers import EspecieSerializer
+from .models import EspecieModel, RazaModel
+from .serializers import EspecieSerializer, RazaSerializer
 # las vistas genericas sirven para ya no hacer mucho codigo pero no estamos estandarizando las respuestas de nuestra api (si da un error lanzara un status 500 sin ningun mensaje), si hay info retornara una lista o un objeto, si no mandamos la data correctamente solamente nos mostrara el mensaje de error
 # Obviamente estas vistas genericas se pueden modificar y se pueden alterar segun nuestros requerimientos
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -83,7 +82,7 @@ class EspecieController(RetrieveUpdateDestroyAPIView):
 
     def get(self, request, id):
         especie = self.get_queryset(id)
-        # print(type(especie))
+        print(especie.especiesRaza.all())
         respuesta = self.serializer_class(instance=especie)
         # indicar, si el resultado de la busqueda es vacio mostrar un mensaje de not found con su estado correspondiente
         # el instance dara la instancia si es que tiene una y sino dara None (vacio)
@@ -134,6 +133,7 @@ class EspecieController(RetrieveUpdateDestroyAPIView):
         # Practica # 2
         # si el id es incorrecto no pasar a la fase de "eliminacion"
         # hay dos formas: 1. hacerlo en el controller como el update y la 2. es hacerlo en el metodo delete
+        # solucion 1
         # especie = self.get_queryset(id)
         # if especie:
         #     respuesta = self.serializer_class(instance=especie)
@@ -163,3 +163,44 @@ class EspecieController(RetrieveUpdateDestroyAPIView):
                 "content": None,
                 "message": "Especie no existe"
             })
+
+
+class RazasController(ListCreateAPIView):
+    queryset = RazaModel.objects.all()
+    serializer_class = RazaSerializer
+
+    def post(self, request):
+        respuesta = self.serializer_class(data=request.data)
+        if respuesta.is_valid() is True:
+            respuesta.save()
+            return Response(data={
+                "success": True,
+                "content": respuesta.data,
+                "message": "Raza creada exitosamente"
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data={
+                "success": False,
+                "content": respuesta.errors,
+                "message": "Data incorrecta"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    def filtrar_razas(self):
+        """Metodo que sirve para filtrar las razas en la base de datos y devuelve solamente las razas cuya especie esten habilitadas (true)"""
+        razas = RazaModel.objects.all()
+        resultado = []
+        for raza in razas:
+            if (raza.especie.especieEstado is True):
+                resultado.append(raza)
+        return resultado
+
+    def get(self, request):
+        # solamente me muestre las razas con especies habilitadas
+        respuesta = self.serializer_class(
+            instance=self.filtrar_razas(), many=True)
+        # print(self.get_queryset()[1].especie)
+        return Response({
+            "success": True,
+            "content": respuesta.data,
+            "message": None
+        })

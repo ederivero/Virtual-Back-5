@@ -21,8 +21,12 @@ class PromocionAdmin(admin.ModelAdmin):
     list_filter = ['promocionEstado']
 
 
+class EspecieAdmin(admin.ModelAdmin):
+    list_display = ['especieNombre']
+
+
 admin.site.register(RazaModel, RazaAdmin)
-admin.site.register(EspecieModel)
+admin.site.register(EspecieModel, EspecieAdmin)
 admin.site.register(ClienteModel)
 admin.site.register(PromocionModel, PromocionAdmin)
 admin.site.register(MascotaModel)

@@ -27,8 +27,11 @@ class EspecieModel(models.Model):
     )
 
     def __str__(self):
-        """Sirve para modificar la forma en la cual se mostrara el objeto por consola"""
-        return self.especieNombre
+        """Sirve para modificar la forma en la cual se mostrara el objeto por consola y para mostrar la descripcion del objeto en el panel administrativo"""
+        return "El nombre es: {}, su ID es: {}, su estado es: {}".format(
+            self.especieNombre,
+            self.especieId,
+            self.especieEstado)
 
     class Meta:
         db_table = 't_especie'
