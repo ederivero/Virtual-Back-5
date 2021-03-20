@@ -1,5 +1,7 @@
+from django.db import models
+from django.db.models import fields
 from rest_framework import serializers
-from .models import EspecieModel, RazaModel
+from .models import EspecieModel, MascotaModel, RazaModel
 
 
 class MostrarRazaSerializer(serializers.ModelSerializer):
@@ -73,4 +75,10 @@ class RazaVistaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RazaModel
+        fields = '__all__'
+
+
+class MascotaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MascotaModel
         fields = '__all__'

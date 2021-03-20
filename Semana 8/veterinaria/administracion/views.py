@@ -1,13 +1,19 @@
-from .models import EspecieModel, RazaModel
-from .serializers import EspecieSerializer, RazaEscrituraSerializer, RazaVistaSerializer
+from .models import ClienteModel, EspecieModel, RazaModel, MascotaModel
+from .serializers import EspecieSerializer, RazaEscrituraSerializer, RazaVistaSerializer, MascotaSerializer
 # las vistas genericas sirven para ya no hacer mucho codigo pero no estamos estandarizando las respuestas de nuestra api (si da un error lanzara un status 500 sin ningun mensaje), si hay info retornara una lista o un objeto, si no mandamos la data correctamente solamente nos mostrara el mensaje de error
 # Obviamente estas vistas genericas se pueden modificar y se pueden alterar segun nuestros requerimientos
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 # sirve para devolver una Respuesta mejor elaborada al usuario
 from rest_framework.response import Response
 from rest_framework import status
+# Asi se importa si vas a usar una class APIView
+from rest_framework.views import APIView
+# Asi si vas a usar un decorator
+# https://www.django-rest-framework.org/api-guide/views/#api-policy-decorators
+from rest_framework.decorators import api_view
 
+from django.db.models import Count
 # Las APIViews sirven para darnos ya los metodos que pueden ser accedidos a esta clase, en el siguiente caso sera el metedo GET, POST
 # pero adicional a ello queremos implementar un metodo mas se puede realizar con total normalidad y no vamos a tener ningun problema
 
@@ -208,4 +214,121 @@ class RazasController(ListCreateAPIView):
 
 
 class MascotasController(ListCreateAPIView):
-    pass
+    queryset = MascotaModel.objects.all()
+    serializer_class = MascotaSerializer
+
+    def post(self, request):
+        resultado = self.serializer_class(data=request.data)
+        if resultado.is_valid():
+            resultado.save()
+            return Response({
+                "success": True,
+                "content": resultado.data,
+                "message": "Mascota registrada exitosamente"
+            }, status.HTTP_201_CREATED)
+        else:
+            return Response({
+                "success": False,
+                "content": resultado.errors,
+                "message": "Hubo un error al registrar la mascota"
+            }, status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        resultado = self.serializer_class(
+            instance=self.get_queryset(), many=True)
+        return Response({
+            "success": True,
+            "content": resultado.data,
+            "message": None
+        })
+
+
+# Luego de usar las vistas genericas podemos tambien utilizar algunas vistas con total control de nuestro metodos, se puede realizar en forma de una clase o en forma de una funcion
+# al usar APIViews no tenemos que indicar a que modelo corresponde ni a que serializador van a cumplir ordenes ya que en cada metodo podemos acceder a diferentes modelos
+class CustomController(APIView):
+    # el api view se puede utilizar para trabajar con varios modelos dentro de la misma clase
+    # https://www.django-rest-framework.org/api-guide/views/
+
+    def get(self, request):
+        return Response({
+            "message": "Esto es un controlador de prueba"
+        })
+
+    def post(self, request):
+        pass
+
+
+# Tambien se puede crear ApiViews sin la necesidad de hacerlo mediante una clase, se usaria un decorador
+@api_view(['GET', 'POST'])
+def prueba(request):  # /usuario/:id
+    print(request.method)
+    print(request.data)
+    if(request.method == 'POST'):
+        pass
+    return Response({
+        "message": "Esto es un controlador de prueba!"
+    })
+
+
+# hacer un controlador para contabilizar la cantidad de perros nacidos en determinado año
+# SELECT * FROM t_mascota where mascota_fecnac BETWEEN "2018-01-01" and "2018-12-31";
+# En el ORM seria => MascotaModel.objects.filter(mascotaFechaNacimiento__range=("2018-01-01","2018-12-31"))
+class BusquedaController(ListAPIView):
+    queryset = MascotaModel.objects.all()
+    serializer_class = MascotaSerializer
+
+    def get(self, request):
+        # print(request.query_params.get('raza'))
+        if request.query_params.get('fecha'):
+            anio = request.query_params.get('fecha')
+            # mascotas = MascotaModel.objects.filter(
+            # mascotaFechaNacimiento__range=(anio+"-01-01", anio+"-12-31")).all()
+            # Para ver todas las combinaciones posibles entre las columnas y sus opciones => https://docs.djangoproject.com/en/3.1/ref/models/querysets/#gt
+            # SELECT * FROM t_mascota where YEAR(mascota_fecnac) = 2018;
+            mascotas = MascotaModel.objects.filter(
+                mascotaFechaNacimiento__year=anio).all()
+            resultado = self.serializer_class(mascotas, many=True)
+            return Response({
+                "success": True,
+                "content": resultado.data,
+                "message": None
+            })
+        else:
+            return Response({
+                "success": False,
+                "content": None,
+                "message": "No de proveyeron los campos suficientes"
+            })
+
+
+# controlador para contabilizar cuantas mascotas son machos y cuantas mascotas son hembras
+@api_view(['GET'])
+def contabilitar_sexo(request):
+    # Seleccionar que values vamos a utilizar para esta consulta
+    # el metodo values sirve para indicar que columnas vamos a utilizar de la tabla
+    # Luego el count sirve para hacer la cuenta de en este caso las mascotaSexo
+    # el annotate sirve para hacer clausulas de agrupamiento
+    # Order by es una clausula de ordenamiento en el cual su valor por defecto es ASCENDENTE, si queremos ordenar de manera descendente simplemente ponemos un '-' antes de la columna
+    resultado = MascotaModel.objects.values(
+        'mascotaSexo').annotate(Count('mascotaSexo')).order_by('mascotaSexo')
+    # Si queremos hacer un ordeamiento usando alguna relacion con una columna de un padre
+    pruebas = MascotaModel.objects.order_by('-raza__razaNombre').all()
+    # Busqueda de todas las mascotas cuando su razanombre sea Dobberman
+    # select * from t_mascota
+    # join t_raza on t_mascota.raza_id = t_raza.raza_id
+    # join t_especie on t_raza.especie_id = t_especie.especie_id
+    # where especie_nombre ="Perrito" ;
+    pruebas = MascotaModel.objects.filter(
+        raza__especie__especieNombre="Perrito").all()
+    # devolviendo todas las especies cuyo mascota_nombre = "Mocha", entonces para ingresar a la mascota usamos el related_name entre especie y raza "especiesRaza" luego ingresamos a la entidad Mascota mediante su related_name "mascotasRaza" y recien ahi estaremos en la entidad Mascota y podremos usar todos sus atributos como mascotaNombre
+    pruebas = EspecieModel.objects.filter(
+        especiesRaza__mascotasRaza__mascotaNombre="Mocha").all()
+    # Nota: el accesso entre entidades no solamente se hace en el filter, se puede ocupar en cualquiera de los metodos del objects, por ejemplo: filter() order_by() annotate() values(), etc..
+    print(pruebas)
+    # print(resultado)
+    # para mas informacion sobre como hacer clausulas LIKE, ordenamiento, agrupamiento, ingresar a los padres, a los hijos, etc:
+    # https://docs.djangoproject.com/en/3.1/ref/models/querysets
+    return Response({
+        "success": True,
+        "content": resultado
+    })
