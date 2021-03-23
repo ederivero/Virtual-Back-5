@@ -1,5 +1,7 @@
+from django.shortcuts import get_object_or_404
+from requests.api import get
 from .models import ClienteModel, EspecieModel, RazaModel, MascotaModel
-from .serializers import (ClienteSerializer,
+from .serializers import (ClienteMascotaSerializer, ClienteSerializer,
                           EspecieSerializer,
                           RazaEscrituraSerializer,
                           RazaVistaSerializer,
@@ -389,3 +391,29 @@ class ClienteController(ListCreateAPIView):
             "content": resultado.errors,
             "message": "Hubo un error al guardar el cliente"
         }, status.HTTP_400_BAD_REQUEST)
+
+
+# Ejercicio 1 ver todas las mascotas de un usuario segun su dni, PISTA: usar el related_name ubicado en la fk de usuario en el modelo de mascota
+# 127.0.0.1:8000/buscar?dni=73500745
+
+
+@api_view(['GET'])
+def buscar_mascotas(request):
+    print(request.query_params)
+    dni = request.query_params.get('dni')
+    try:
+        cliente = get_object_or_404(ClienteModel, pk=dni)
+        print(cliente)
+        resultado = ClienteMascotaSerializer(instance=cliente)
+        # https://docs.djangoproject.com/en/3.1/topics/http/shortcuts/#get-object-or-404
+        # llamarian la serializer
+        return Response({
+            "success": True,
+            "content": resultado.data
+        })
+    except:
+        return Response({
+            "success": False
+        })
+
+# Ejercicio bonus luego mostrar la raza de esa mascota

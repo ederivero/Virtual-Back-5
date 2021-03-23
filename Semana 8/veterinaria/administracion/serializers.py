@@ -95,3 +95,30 @@ class RegistroClienteSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=45, trim_whitespace=True)
     telefono = serializers.CharField(max_length=10, min_length=4)
     direccion = serializers.CharField(max_length=50)
+
+##########
+# Relacionado con el ejercicio
+####
+
+
+class RazaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RazaModel
+        fields = '__all__'
+
+
+class MascotaRazaSerializer(serializers.ModelSerializer):
+    raza = RazaSerializer()
+
+    class Meta:
+        model = MascotaModel
+        fields = '__all__'
+
+
+class ClienteMascotaSerializer(serializers.ModelSerializer):
+    mascotas = MascotaRazaSerializer(
+        source="mascotasCliente", many=True, read_only=True)
+
+    class Meta:
+        model = ClienteModel
+        fields = '__all__'
