@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,9 +76,10 @@ WSGI_APPLICATION = 'veterinaria.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
+DATABASES = {}
+if os.environ.get("PROD"):
+    DEBUG = False
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'o601qu3gv3nvde4m',
         'USER': 'q0v1xjsk0nsea15j',
@@ -87,7 +89,15 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.db',
     }
-}
+else:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'veterinaria',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',  # localhost
+        'PORT': '3306'
+    }
 
 
 # Password validation

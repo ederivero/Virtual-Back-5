@@ -7,6 +7,7 @@ from .views import (EspeciesController,
                     prueba,
                     CustomController,
                     BusquedaController,
+                    ClienteController,
                     contabilitar_sexo)
 # esta variable se tiene que llamar asi SI O SI
 urlpatterns = [
@@ -18,4 +19,5 @@ urlpatterns = [
     path('prueba2', CustomController.as_view()),
     path('busquedaFecha', BusquedaController.as_view()),
     path('contabilizarSexo', contabilitar_sexo),
+    path('cliente', ClienteController.as_view()),
 ]

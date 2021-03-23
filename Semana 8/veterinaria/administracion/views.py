@@ -1,8 +1,15 @@
 from .models import ClienteModel, EspecieModel, RazaModel, MascotaModel
-from .serializers import EspecieSerializer, RazaEscrituraSerializer, RazaVistaSerializer, MascotaSerializer
+from .serializers import (ClienteSerializer,
+                          EspecieSerializer,
+                          RazaEscrituraSerializer,
+                          RazaVistaSerializer,
+                          MascotaSerializer,
+                          RegistroClienteSerializer)
 # las vistas genericas sirven para ya no hacer mucho codigo pero no estamos estandarizando las respuestas de nuestra api (si da un error lanzara un status 500 sin ningun mensaje), si hay info retornara una lista o un objeto, si no mandamos la data correctamente solamente nos mostrara el mensaje de error
 # Obviamente estas vistas genericas se pueden modificar y se pueden alterar segun nuestros requerimientos
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (ListAPIView,
+                                     ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView)
 
 # sirve para devolver una Respuesta mejor elaborada al usuario
 from rest_framework.response import Response
@@ -14,6 +21,8 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 
 from django.db.models import Count
+
+from .utils import consultarDNI
 # Las APIViews sirven para darnos ya los metodos que pueden ser accedidos a esta clase, en el siguiente caso sera el metedo GET, POST
 # pero adicional a ello queremos implementar un metodo mas se puede realizar con total normalidad y no vamos a tener ningun problema
 
@@ -332,3 +341,51 @@ def contabilitar_sexo(request):
         "success": True,
         "content": resultado
     })
+
+
+class ClienteController(ListCreateAPIView):
+    queryset = ClienteModel.objects.all()
+    serializer_class = ClienteSerializer
+
+    def get(self, request):
+        resultado = self.serializer_class(self.get_queryset(), many=True)
+        return Response({
+            "success": True,
+            "content": resultado.data,
+            "message": None
+        })
+
+    def post(self, request):
+        resultado = RegistroClienteSerializer(data=request.data)
+        if resultado.is_valid():
+            # validar si el dni ya esta registrado
+            validacion = ClienteModel.objects.filter(
+                clienteDni=resultado.validated_data.get('dni')).first()
+            if validacion is None:
+                resultado.validated_data
+                personaEncontrada = consultarDNI(
+                    resultado.validated_data.get('dni'))
+                print(personaEncontrada)
+                nuevoCliente = ClienteModel(clienteDni=resultado.validated_data.get('dni'),
+                                            clienteNombre=personaEncontrada.get(
+                                                'data').get('nombres'),
+                                            clienteApellido=personaEncontrada.get('data').get(
+                                                'apellido_paterno')+' ' + personaEncontrada.get('data').get('apellido_materno'),
+                                            clienteEmail=resultado.validated_data.get(
+                                                'email'),
+                                            clienteFono=resultado.validated_data.get(
+                                                'telefono')
+                                            )
+                nuevoCliente.save()
+                # resultado.save()
+                return Response({
+                    "success": True,
+                    "content": self.serializer_class(nuevoCliente).data,
+                    "message": "Cliente registrado exitosamente"
+                }, status.HTTP_201_CREATED)
+
+        return Response({
+            "success": False,
+            "content": resultado.errors,
+            "message": "Hubo un error al guardar el cliente"
+        }, status.HTTP_400_BAD_REQUEST)

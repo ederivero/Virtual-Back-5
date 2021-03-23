@@ -1,7 +1,5 @@
-from django.db import models
-from django.db.models import fields
 from rest_framework import serializers
-from .models import EspecieModel, MascotaModel, RazaModel
+from .models import ClienteModel, EspecieModel, MascotaModel, RazaModel
 
 
 class MostrarRazaSerializer(serializers.ModelSerializer):
@@ -82,3 +80,18 @@ class MascotaSerializer(serializers.ModelSerializer):
     class Meta:
         model = MascotaModel
         fields = '__all__'
+
+
+class ClienteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClienteModel
+        fields = '__all__'
+
+
+class RegistroClienteSerializer(serializers.Serializer):
+    # el valor del required x default es True
+    # trim_whitespace lo que hace es remueve los espacios
+    dni = serializers.CharField(max_length=9, required=True, min_length=8)
+    email = serializers.EmailField(max_length=45, trim_whitespace=True)
+    telefono = serializers.CharField(max_length=10, min_length=4)
+    direccion = serializers.CharField(max_length=50)
