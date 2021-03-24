@@ -2,7 +2,7 @@ from django.contrib.auth.models import BaseUserManager
 
 
 class UsuarioManager(BaseUserManager):
-    """Clase que sirve para modificar el comportamiento del modelo Auth del proyecto de django"""
+    """Clase que sirve para modificar el comportamiento del modelo User del proyecto de django"""
 
     def create_user(self, email, nombre, apellido, tipo, password=None):
         """Creacion de un usuario comun y corriente"""
@@ -17,5 +17,17 @@ class UsuarioManager(BaseUserManager):
         # ahora encriptamos la contraseña
         usuario.set_password(password)
         # guardamos en la bd
-        usuario.save(using=self._db)  # sirve para referenciar a la bd
+        # sirve para referenciar a la bd en el caso que nosotros tengamos varias bd
+        usuario.save(using=self._db)
         return usuario
+
+    def create_superuser(self, personalCorreo, personalNombre, personalApellido, personalTipo, password):
+        """Creacion de un nuevo super usuario para que pueda acceder al panel administrativo y algunas opciones adicionaes"""
+        usuario = self.create_user(
+            personalCorreo, personalNombre, personalApellido, personalTipo, password)
+        # ahora como es un super usuario y para que pueda ingresar al panel administrativo tenemos que designar sus permisos
+        # este campo se crea automaticamente por la herencia del user model
+        # sirve para poder manipular a otros usuarios y tener permisos exclusivos en el panel administrativo
+        usuario.is_superuser = True
+        usuario.is_staff = True  # sirve para poder ingresar al panel administrativo
+        usuario.save(using=self._db)
