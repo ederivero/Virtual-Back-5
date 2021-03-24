@@ -26,10 +26,7 @@ SECRET_KEY = '%1pa8!1+v+d2v1swf+35h9ud2kol_dmc3%t3tw_w*$s8p7a%iu'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
-
-# Application definition
+ALLOWED_HOSTS = ['https://veterinaria-django-eduardo.herokuapp.com/']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -41,9 +38,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'administracion',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -138,3 +137,28 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# AQUI VAN LAS CONFIGURACIONES ADICIONALES A NUESTRO PROYECTO
+# TODO LO RELACION A LOS CORS
+
+# Modificar los CORS para que pueda ser accedida nuestra API
+CORS_ALLOWED_ORIGINS = ['*']
+# si queremos permitir el acceso de todos los dominios se le indica con el *
+# CORS_ALLOW_ALL_ORIGINS = True
+# Si queremos indicar que metodos pueden ser accedidos o solicitados:
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'POST',
+    'PUT',
+]
+
+# Para definir que tipos de cabeceras me pueden mandar
+# https://developer.mozilla.org/es/docs/Web/HTTP/Headers
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+]
+
+# FIN CORS
