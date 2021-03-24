@@ -19,7 +19,8 @@ class PersonalModel(AbstractBaseUser, PermissionsMixin):
     personalCorreo = models.EmailField(
         db_column='personal_correo',
         max_length=30,
-        verbose_name='Correo del personal'
+        verbose_name='Correo del personal',
+        unique=True
     )
     personalTipo = models.IntegerField(
         db_column='personal_tipo',
@@ -97,7 +98,8 @@ class PlatoModel(models.Model):
     platoDescripcion = models.CharField(
         db_column='plato_descripcion',
         null=False,
-        verbose_name='Nombre del plato'
+        verbose_name='Nombre del plato',
+        max_length=50
     )
     platoCantidad = models.IntegerField(
         db_column='plato_cantidad',
