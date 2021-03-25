@@ -107,6 +107,7 @@ class PlatoModel(models.Model):
         null=False
     )
     platoFoto = models.ImageField(
+        upload_to='platos/',
         db_column='plato_foto',
         verbose_name='Foto del plato',
         null=False

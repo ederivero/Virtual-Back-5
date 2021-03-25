@@ -127,3 +127,8 @@ STATIC_URL = '/static/'
 
 # Al nosotros sobreescribir el modelo de usuario tenemos que indicar a Django
 AUTH_USER_MODEL = 'restaurante.PersonalModel'
+
+# sirve para indicar donde se guardaran todos los archivos pasados por el client (FileField o ImageField)
+MEDIA_URL = '/media/'
+# sirve para mostrar el archivo multimedia mediante una URL
+MEDIA_ROOT = BASE_DIR / 'media'
