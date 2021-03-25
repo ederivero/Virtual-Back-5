@@ -32,9 +32,16 @@ class PlatosController(generics.ListCreateAPIView):
         # solamente guardar el uuid sin el nombre de la imagen
         # ee2ee0cd-ea63-4baa-9b70-828aa6af0250juane.jpg
         # ee2ee0cd-ea63-4baa-9b70-828aa6af0250.jpg
-
-        request.FILES['platoFoto'].name = str(
-            uuid4())+request.FILES['platoFoto'].name
+        # opcion 1
+        # formato = request.FILES['platoFoto'].name.split('.')[1]
+        # nombre=str(uuid4())+'.'+formato
+        # request.FILES['platoFoto'].name = nombre
+        ###
+        # opcion 2
+        nombreOriginal = request.FILES['platoFoto'].name
+        formato = nombreOriginal[nombreOriginal.find('.'):]
+        nombre = str(uuid4())+formato
+        request.FILES['platoFoto'].name = nombre
         respuesta = self.serializer_class(data=request.data)
         if respuesta.is_valid():
             respuesta.save()
@@ -49,3 +56,25 @@ class PlatosController(generics.ListCreateAPIView):
                 'message': 'Error al registrar el plato',
                 'content': respuesta.errors
             }, status.HTTP_400_BAD_REQUEST)
+
+
+class PlatoController(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PlatoModel.objects.all()
+    serializer_class = PlatoSerializer
+
+    def get_queryset(self, id):
+        return PlatoModel.objects.get(platoId=id)
+
+    def get(self, request, id):
+        resultado = self.serializer_class(instance=self.get_queryset(id))
+        return Response({
+            'succes': True,
+            'content': resultado.data,
+            'message': None
+        })
+
+    def put(self, request, id):
+        pass
+
+    def delete(self, request, id):
+        pass
