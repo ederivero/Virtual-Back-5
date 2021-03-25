@@ -68,7 +68,7 @@ class PlatoController(generics.RetrieveUpdateDestroyAPIView):
     def get(self, request, id):
         resultado = self.serializer_class(instance=self.get_queryset(id))
         return Response({
-            'succes': True,
+            'success': True,
             'content': resultado.data,
             'message': None
         })
@@ -77,4 +77,10 @@ class PlatoController(generics.RetrieveUpdateDestroyAPIView):
         pass
 
     def delete(self, request, id):
-        pass
+        plato = self.get_queryset(id)
+        plato.delete()
+        return Response({
+            'success': True,
+            'content': None,
+            'message': 'Plato eliminado'
+        })
