@@ -118,6 +118,17 @@ class PlatoModel(models.Model):
         null=False,
         verbose_name='Precio del plato'
     )
+    # CAMPOS DE AUDITORIA
+    # sirve para que cuando se registre un nuevo plato se guarde automaticamente la fecha y hora del servidor
+    createdAt = models.DateTimeField(
+        auto_now_add=True,
+        db_column='created_at'
+    )
+    # sirve para que cuando se actualice un plato se sobreescriba automaticamente la fecha y hora del servidor
+    updatedAt = models.DateTimeField(
+        auto_now=True,
+        db_column='updated_at'
+    )
 
     class Meta:
         db_table = 't_plato'

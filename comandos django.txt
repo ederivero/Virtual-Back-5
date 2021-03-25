@@ -5,5 +5,7 @@ py manage.py migrate [nombre_app] => ejecuta todas las migraciones que aun no ha
 py manage.py makemigrations [nombre_app] => crea las migraciones correspondientes del proyecto o de la aplicacion
 py manage.py createsuperuser => crea un super usuario para poder acceder al panel administrativo
 py manage.py shell => abre una terminal de python pero con todas las librerias de django para poder practicar con los modelos, serializers, views, etc..
-py .\manage.py collectstatic => genera todos los archivos estaticos (css, js, img, etc) y los pone en la carpeta definida en la variable STATIC_ROOT
+py manage.py collectstatic => genera todos los archivos estaticos (css, js, img, etc) y los pone en la carpeta definida en la variable STATIC_ROOT
+py manage.py flush => sirve para eliminar todos los datos y crear la bd de 0 sin data
+py manage.py help <comando> => muestra para que sirve y sus opciones adicionales de ese comando
 NOTA: adicional al showmigrations y migrate se puede especificar que aplicacion queremos migrar o visualizar indicandola
