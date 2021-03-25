@@ -144,7 +144,35 @@ class PersonalMesaModel(models.Model):
 
 
 class ComprobanteModel(models.Model):
-    pass
+    comprobanteId = models.AutoField(
+        primary_key=True,
+        unique=True,
+        db_column='comprobante_id'
+    )
+    comprobanteSerie = models.CharField(
+        max_length=4,
+        db_column='comprobante_serie'
+    )
+    comprobanteNumero = models.IntegerField(
+        db_column='comprobante_numero'
+    )
+    comprobantePdf = models.URLField(
+        db_column='comprobante_pdf'
+    )
+    comprobanteCdr = models.URLField(
+        db_column='comprobante_cdr'
+    )
+    comprobanteXml = models.URLField(
+        db_column='comprobante_xml'
+    )
+    comprobanteRuc = models.CharField(
+        db_column='comprobante_ruc',
+        max_length=11
+    )
+
+    class Meta:
+        db_table = 't_comprobante'
+        verbose_name = 'comprobante'
 
 
 class CabeceraComandaModel(models.Model):
@@ -182,6 +210,42 @@ class CabeceraComandaModel(models.Model):
     comprobante = models.OneToOneField(
         to=ComprobanteModel,
         db_column='comprobante_id',
+        on_delete=models.CASCADE,
         null=False
-
     )
+
+    class Meta:
+        db_table = 't_comanda_cabecera'
+        verbose_name = 'comanda cabecera'
+
+
+class DetalleComandaModel(models.Model):
+    detalleId = models.AutoField(
+        primary_key=True,
+        unique=True,
+        db_column='detalle_id'
+    )
+    detalleCantidad = models.IntegerField(
+        db_column='detalle_cantidad'
+    )
+    detalleSubtotal = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        db_column='detalle_subtotal'
+    )
+    plato = models.ForeignKey(
+        to=PlatoModel,
+        db_column='plato_id',
+        on_delete=models.PROTECT,
+        null=False
+    )
+    cabecera = models.ForeignKey(
+        to=CabeceraComandaModel,
+        db_column='cabecera_id',
+        on_delete=models.PROTECT,
+        null=False
+    )
+
+    class Meta:
+        db_table = 't_comanda_detalle'
+        verbose_name = 'detalle comanda'
