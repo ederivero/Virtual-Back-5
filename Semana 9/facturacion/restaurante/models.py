@@ -122,3 +122,66 @@ class PlatoModel(models.Model):
     class Meta:
         db_table = 't_plato'
         verbose_name = 'Plato'
+
+
+class PersonalMesaModel(models.Model):
+    personalId = models.ForeignKey(
+        to=PersonalModel,
+        on_delete=models.CASCADE,
+        related_name='personalMesas',
+        db_column='personal_id'
+    )
+    mesaId = models.ForeignKey(
+        to=MesaModel,
+        on_delete=models.CASCADE,
+        related_name='mesaPersonales',
+        db_column='mesa_id'
+    )
+
+    class Meta:
+        db_table = 't_personal_mesa'
+        verbose_name = 'personal mesa'
+
+
+class ComprobanteModel(models.Model):
+    pass
+
+
+class CabeceraComandaModel(models.Model):
+    cabeceraId = models.AutoField(
+        primary_key=True,
+        unique=True,
+        db_column='cabecera_id'
+    )
+    cabeceraFecha = models.DateField(
+        db_column='cabecera_fecha',
+        null=False
+    )
+    cabeceraTotal = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        db_column='cabecera_total',
+        null=False
+    )
+    cabeceraCliente = models.TextField(
+        db_column='cabecera_cliente',
+        null=False
+    )
+    mozo = models.ForeignKey(
+        to=PersonalModel,
+        on_delete=models.PROTECT,
+        db_column='mozo_id',
+        null=False
+    )
+    mesa = models.ForeignKey(
+        to=MesaModel,
+        on_delete=models.PROTECT,
+        db_column='mesa_id',
+        null=False
+    )
+    comprobante = models.OneToOneField(
+        to=ComprobanteModel,
+        db_column='comprobante_id',
+        null=False
+
+    )
