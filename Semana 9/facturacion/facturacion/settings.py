@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'restaurante',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -132,3 +134,6 @@ AUTH_USER_MODEL = 'restaurante.PersonalModel'
 MEDIA_URL = '/media/'
 # sirve para mostrar el archivo multimedia mediante una URL
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# HABILITAMOS LOS CORS
+CORS_ALLOW_ALL_ORIGINS = True
