@@ -46,3 +46,9 @@ class CustomPayloadSerializer(TokenObtainPairSerializer):
         token['otraCosa'] = 'valor secreto'
         print(token)
         return token
+
+
+class MesaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MesaModel
+        fields = '__all__'

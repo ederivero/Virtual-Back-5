@@ -3,12 +3,14 @@ from .serializers import *
 from rest_framework.response import Response
 from uuid import uuid4
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+from .permissions import administradorPost, soloAdministrador
 
 
 class PlatosController(generics.ListCreateAPIView):
     queryset = PlatoModel.objects.all()
     serializer_class = PlatoSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly, administradorPost]
 
     def get(self, request):
         respuesta = self.serializer_class(
@@ -113,3 +115,40 @@ class CustomPayloadController(TokenObtainPairView):
     # los permissions_classes sirve para indicar que tipo de usuario puede acceder a este controller
     permission_classes = [AllowAny]
     serializer_class = CustomPayloadSerializer
+
+
+class MesaController(generics.ListCreateAPIView):
+    queryset = MesaModel.objects.all()
+    serializer_class = MesaSerializer
+    permission_classes = [soloAdministrador]
+    # IsAdminUser => valida que el usuario que esta tratando de acceder a cualquiera de los metodos sea is_staff
+    # IsAuthenticated => valida que la consulta sea dada por una token valida y correcta
+    # IsAuthenticatedOrReadOnly => solamente pedira la token en el caso que no sea un metodo de lectura (get)
+    # AllowAny => no le importa nada y no pide tokens ni nada
+
+    def get(self, request):
+        print(request.user)
+        print(request.auth)
+        resultado = self.serializer_class(
+            instance=self.get_queryset(), many=True)
+        return Response({
+            'success': True,
+            'content': resultado.data,
+            'message': None
+        })
+
+    def post(self, request):
+        resultado = self.serializer_class(data=request.data)
+        if resultado.is_valid():
+            resultado.save()
+            return Response({
+                'success': True,
+                'content': resultado.data,
+                'message': 'Mesa creada exitosamente'
+            }, status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'success': False,
+                'content': resultado.errors,
+                'message': 'Hubo un error al guardar la mesa'
+            }, status.HTTP_400_BAD_REQUEST)

@@ -9,5 +9,5 @@ urlpatterns = [
     path('login', TokenObtainPairView.as_view()),
     path('refresh_token', TokenRefreshView.as_view()),
     path('login_custom', CustomPayloadController.as_view()),
-
+    path('mesa', MesaController.as_view()),
 ]

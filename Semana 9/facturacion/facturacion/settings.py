@@ -151,7 +151,7 @@ SIMPLE_JWT = {
     # sirve para indicar la pk de nuestra tabla user si es que la hemos cambiado (x defecto es 'id')
     'USER_ID_FIELD': 'personalId',
     # sirve para indicar cuanto de vida va a tener la token de ACCESSO
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
     # sirve para indicar que algoritmo va a usar para encriptar la token
     'ALGORITHM': 'HS256',  # 'HS384', 'HS512',
     # sirve para indicar mediante que palabra va a utilizar para identificar la token
