@@ -2,6 +2,8 @@ from rest_framework import generics, status
 from .serializers import *
 from rest_framework.response import Response
 from uuid import uuid4
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import AllowAny
 
 
 class PlatosController(generics.ListCreateAPIView):
@@ -84,3 +86,30 @@ class PlatoController(generics.RetrieveUpdateDestroyAPIView):
             'content': None,
             'message': 'Plato eliminado'
         })
+
+
+class RegistrarPersonalController(generics.CreateAPIView):
+    serializer_class = RegistroSerializer
+
+    def post(self, request):
+        nuevoPersonal = self.serializer_class(data=request.data)
+        if nuevoPersonal.is_valid():
+            nuevoPersonal.save()
+            return Response({
+                'success': True,
+                'content': nuevoPersonal.data,
+                'message': 'Personal creado exitosamente'
+            }, status.HTTP_201_CREATED)
+        else:
+            return Response({
+                'success': False,
+                'content': nuevoPersonal.errors,
+                'message': 'Error al crear el nuevo personal'
+            }, status.HTTP_400_BAD_REQUEST)
+
+
+class CustomPayloadController(TokenObtainPairView):
+    """Sirve para modificar el claim de nuestra token de acceso"""
+    # los permissions_classes sirve para indicar que tipo de usuario puede acceder a este controller
+    permission_classes = [AllowAny]
+    serializer_class = CustomPayloadSerializer

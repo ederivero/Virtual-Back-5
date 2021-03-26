@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -137,3 +138,25 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # HABILITAMOS LOS CORS
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Para modificar configurarciones de Django-rest-framework se hace mediante la variable REST_FRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+# Para modificar la configuracion predeterminada de nuestro simple-jwt
+# para ver todas las opciones de configuracion => https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#
+SIMPLE_JWT = {
+    # sirve para indicar la pk de nuestra tabla user si es que la hemos cambiado (x defecto es 'id')
+    'USER_ID_FIELD': 'personalId',
+    # sirve para indicar cuanto de vida va a tener la token de ACCESSO
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    # sirve para indicar que algoritmo va a usar para encriptar la token
+    'ALGORITHM': 'HS256',  # 'HS384', 'HS512',
+    # sirve para indicar mediante que palabra va a utilizar para identificar la token
+    'AUTH_HEADER_TYPES': ('Bearer', ),
+    # si el usuario acepta renovar la sesion la token de acceso que se creará sera con un tiempo de vida de un dia
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
+
+}
