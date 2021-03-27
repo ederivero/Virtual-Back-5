@@ -30,3 +30,9 @@ class administradorPost(BasePermission):
                 return False
         else:
             return True
+
+
+class soloMozos(BasePermission):
+    def has_permission(self, request, view):
+        # solamente pueden ser mozos
+        pass

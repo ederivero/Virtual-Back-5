@@ -166,13 +166,16 @@ class MesaController(generics.ListCreateAPIView):
 
 class NotaPedidoController(generics.CreateAPIView):
     serializer_class = NotaPedidoCreacionSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         # crear la cabecera
+        data = self.serializer_class(data=request.data)
+        data.is_valid(raise_exception=True)
+
         CabeceraComandaModel(cabeceraFecha=datetime.now())
         # crear el detalle
         # al momento de crear el detalle validar si existe el plato
         # restar la cantidad vendida de los platos
 
-        pass
 # modificar una nota de pedido para agregar mas productos
