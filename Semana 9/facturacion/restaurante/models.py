@@ -223,7 +223,7 @@ class CabeceraComandaModel(models.Model):
         to=ComprobanteModel,
         db_column='comprobante_id',
         on_delete=models.CASCADE,
-        null=False
+        null=True
     )
 
     class Meta:

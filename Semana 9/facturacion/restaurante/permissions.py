@@ -18,8 +18,9 @@ class soloAdministrador(BasePermission):
         # else:
         #     return False
 
-
 # hacer un permiso para los platos que solamente se necesite una token para el metodo post y que solamente un administrador pueda registrar un plato.
+
+
 class administradorPost(BasePermission):
     def has_permission(self, request, view):
         print(request)
@@ -33,6 +34,10 @@ class administradorPost(BasePermission):
 
 
 class soloMozos(BasePermission):
+    """Permiso para que solamente los mozos puedan acceder"""
+
     def has_permission(self, request, view):
         # solamente pueden ser mozos
-        pass
+        if request.user.personalTipo == 3:
+            return True
+        return False

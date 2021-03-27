@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from uuid import uuid4
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
-from .permissions import administradorPost, soloAdministrador
+from .permissions import *
 import os
 # nos trae todas las variables que estamos usando en el settings
 from django.conf import settings
@@ -166,16 +166,49 @@ class MesaController(generics.ListCreateAPIView):
 
 class NotaPedidoController(generics.CreateAPIView):
     serializer_class = NotaPedidoCreacionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, soloMozos]
 
     def post(self, request):
         # crear la cabecera
         data = self.serializer_class(data=request.data)
         data.is_valid(raise_exception=True)
-
-        CabeceraComandaModel(cabeceraFecha=datetime.now())
+        print(request.user)
+        numeroMesa = data.validated_data['mesa']
+        objMesa = MesaModel.objects.filter(mesaId=numeroMesa).first()
+        # validar si la mesa esta disponible
+        print(objMesa)
+        nuevaCabecera = CabeceraComandaModel(
+            cabeceraFecha=datetime.now(),
+            cabeceraTotal=0,
+            cabeceraCliente=data.validated_data['cliente'],
+            mozo=request.user,
+            mesa=objMesa
+        )
+        nuevaCabecera.save()
         # crear el detalle
+        detalle = data.validated_data['detalle']
+        print(detalle)
+        for detallecomanda in detalle:
+            # buscamos el plato
+            print(detallecomanda['cantidad'])
+            objPlato = PlatoModel.objects.filter(
+                platoId=detallecomanda['plato']).first()
+            print(objPlato)
+            # creamos el detalle del pedido y lo guardamos
+            DetalleComandaModel(
+                detalleCantidad=detallecomanda['cantidad'],
+                detalleSubtotal=detallecomanda['subtotal'],
+                plato=objPlato,  # instancia del modelo plato
+                cabecera=nuevaCabecera
+            ).save()
+            # ahora restamos la cantidad del plato segun lo solicitado
+            objPlato.platoCantidad = objPlato.platoCantidad - \
+                detallecomanda['cantidad']
+            # guardamos ese plato con su cantidad modificada en la bd
+            objPlato.save()
+            # restar la cantidad vendida de los platos
+        # inhabilitar la mesa
+        return Response('ok')
         # al momento de crear el detalle validar si existe el plato
-        # restar la cantidad vendida de los platos
 
 # modificar una nota de pedido para agregar mas productos
