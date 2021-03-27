@@ -5,6 +5,10 @@ from uuid import uuid4
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from .permissions import administradorPost, soloAdministrador
+import os
+# nos trae todas las variables que estamos usando en el settings
+from django.conf import settings
+from datetime import datetime
 
 
 class PlatosController(generics.ListCreateAPIView):
@@ -82,6 +86,12 @@ class PlatoController(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, id):
         plato = self.get_queryset(id)
+        foto = str(plato.platoFoto)
+        try:
+            ruta_imagen = settings.MEDIA_ROOT / foto
+            os.remove(ruta_imagen)
+        except:
+            print('Fotografia del plato no existe')
         plato.delete()
         return Response({
             'success': True,
@@ -152,3 +162,17 @@ class MesaController(generics.ListCreateAPIView):
                 'content': resultado.errors,
                 'message': 'Hubo un error al guardar la mesa'
             }, status.HTTP_400_BAD_REQUEST)
+
+
+class NotaPedidoController(generics.CreateAPIView):
+    serializer_class = NotaPedidoCreacionSerializer
+
+    def post(self, request):
+        # crear la cabecera
+        CabeceraComandaModel(cabeceraFecha=datetime.now())
+        # crear el detalle
+        # al momento de crear el detalle validar si existe el plato
+        # restar la cantidad vendida de los platos
+
+        pass
+# modificar una nota de pedido para agregar mas productos

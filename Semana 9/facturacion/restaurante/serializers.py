@@ -52,3 +52,15 @@ class MesaSerializer(serializers.ModelSerializer):
     class Meta:
         model = MesaModel
         fields = '__all__'
+
+
+class DetallePedidoCreacionSerializer(serializers.Serializer):
+    cantidad = serializers.IntegerField(min_value=1)
+    subtotal = serializers.DecimalField(max_digits=5, decimal_places=2)
+    plato = serializers.IntegerField()
+
+
+class NotaPedidoCreacionSerializer(serializers.Serializer):
+    cliente = serializers.CharField(max_length=50, min_length=1)
+    mesa = serializers.IntegerField()
+    detalle = DetallePedidoCreacionSerializer(many=True)
