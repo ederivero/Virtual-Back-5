@@ -8,7 +8,7 @@ from .permissions import *
 import os
 # nos trae todas las variables que estamos usando en el settings
 from django.conf import settings
-from datetime import datetime
+from datetime import date
 
 
 class PlatosController(generics.ListCreateAPIView):
@@ -178,7 +178,8 @@ class NotaPedidoController(generics.CreateAPIView):
         # validar si la mesa esta disponible
         print(objMesa)
         nuevaCabecera = CabeceraComandaModel(
-            cabeceraFecha=datetime.now(),
+            # si la columna en la bd es tipo date, al momento de guardar datos con hh:mm:ss y SI USAMOS ese registro recien creado nos dara error ya que indicara que no puede mostrar la hh:mm:ss entonces deberemos guardar SOLAMENTE la fecha (YYYY-MM-DD) sin sus horas con date.today()
+            cabeceraFecha=date.today(),
             cabeceraTotal=0,
             cabeceraCliente=data.validated_data['cliente'],
             mozo=request.user,
@@ -208,7 +209,21 @@ class NotaPedidoController(generics.CreateAPIView):
             objPlato.save()
             # restar la cantidad vendida de los platos
         # inhabilitar la mesa
-        return Response('ok')
+        # PISTA = ya tengo la nuevaCabecera
+        # PISTA#2 = hacerlo en un serializer y solamente pasar la 'nuevaCabecera'
+        resultado = MostrarPedidoSerializer(instance=nuevaCabecera)
+
+        return Response({
+            'success': True,
+            'content': resultado.data,
+            'message': 'Venta creada'
+        })
         # al momento de crear el detalle validar si existe el plato
 
 # modificar una nota de pedido para agregar mas productos
+
+
+# TAREA!
+class MostrarMesasMozo(generics.ListAPIView):
+    queryset = PersonalModel.objects.all()
+    serializer_class = MostrarMesasMozoSerializer

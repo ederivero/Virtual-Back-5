@@ -64,3 +64,41 @@ class NotaPedidoCreacionSerializer(serializers.Serializer):
     cliente = serializers.CharField(max_length=50, min_length=1)
     mesa = serializers.IntegerField()
     detalle = DetallePedidoCreacionSerializer(many=True)
+
+
+class MostrarPlatoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlatoModel
+        fields = ['platoDescripcion', 'platoFoto']
+
+
+class MostrarDetallePedidoSerializer(serializers.ModelSerializer):
+    plato = MostrarPlatoSerializer()
+
+    class Meta:
+        model = DetalleComandaModel
+        exclude = ['cabecera']
+
+
+class MostrarPedidoSerializer(serializers.ModelSerializer):
+    detalle = MostrarDetallePedidoSerializer(
+        source='cabeceraDetalles', many=True)
+
+    class Meta:
+        model = CabeceraComandaModel
+        fields = '__all__'
+
+# TAREA!
+# Devolver todas las mesas de un mozo,
+# mandar el token del mozo y debera retornar todas sus mesas que ha atendido
+# no importa si se repiten las mesas
+# indicar el numero de mesa
+# /mozo/mesas
+# Al menos llegar a la creacion de la vista y mostrar el usuario de la token
+
+
+class MostrarMesasMozoSerializer(serializers.ModelSerializer):
+    # ingresar a todas sus comanda cabecera y luego a sus mesas
+    class Meta:
+        model = PersonalModel
+        fields = '__all__'

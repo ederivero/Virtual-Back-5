@@ -136,23 +136,23 @@ class PlatoModel(models.Model):
         verbose_name = 'Plato'
 
 
-class PersonalMesaModel(models.Model):
-    personalId = models.ForeignKey(
-        to=PersonalModel,
-        on_delete=models.CASCADE,
-        related_name='personalMesas',
-        db_column='personal_id'
-    )
-    mesaId = models.ForeignKey(
-        to=MesaModel,
-        on_delete=models.CASCADE,
-        related_name='mesaPersonales',
-        db_column='mesa_id'
-    )
+# class PersonalMesaModel(models.Model):
+#     personalId = models.ForeignKey(
+#         to=PersonalModel,
+#         on_delete=models.CASCADE,
+#         related_name='personalMesas',
+#         db_column='personal_id'
+#     )
+#     mesaId = models.ForeignKey(
+#         to=MesaModel,
+#         on_delete=models.CASCADE,
+#         related_name='mesaPersonales',
+#         db_column='mesa_id'
+#     )
 
-    class Meta:
-        db_table = 't_personal_mesa'
-        verbose_name = 'personal mesa'
+#     class Meta:
+#         db_table = 't_personal_mesa'
+#         verbose_name = 'personal mesa'
 
 
 class ComprobanteModel(models.Model):
@@ -249,11 +249,13 @@ class DetalleComandaModel(models.Model):
         to=PlatoModel,
         db_column='plato_id',
         on_delete=models.PROTECT,
+        related_name='platoDetalles',
         null=False
     )
     cabecera = models.ForeignKey(
         to=CabeceraComandaModel,
         db_column='cabecera_id',
+        related_name='cabeceraDetalles',
         on_delete=models.PROTECT,
         null=False
     )
