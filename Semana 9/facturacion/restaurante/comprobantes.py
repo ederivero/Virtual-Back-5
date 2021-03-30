@@ -13,15 +13,16 @@ def emitirComprobante(pedido, cabecera_id):
     cliente_tipo_documento = pedido['cliente_tipo_documento']
     tipo_comprobante = pedido['tipo_comprobante']
     # buscamos ese pedido para jalar sus datos
-    pedido = CabeceraComandaModel.objects.get(cabeceraId=cabecera_id).first()
+    comanda = CabeceraComandaModel.objects.get(cabeceraId=cabecera_id)
+    print(pedido)
     # sacamos el total del pedido
-    total = float(pedido['cabecera_total'])
+    total = float(comanda.cabeceraTotal)
     # el valor total sin el IGV
     total_gravada = total / 1.18
     # el valor total del IGV de la compra
     total_igv = total - total_gravada
 
-    if len(pedido['cliente_documento'] > 0):
+    if len(pedido['cliente_documento']) > 0:
         # significa que el pedido fue mayor a 700 soles O el cliente dio su dni para la compra
         # ahora se busca la persona o entidad para extraer sus datos
         base_url_apiperu = "https://apiperu.dev/api/"
@@ -61,7 +62,7 @@ def emitirComprobante(pedido, cabecera_id):
 
     items = []
     # me retorna todo el detalle de un pedido
-    for detalle in pedido.cabeceraDetalles.all():
+    for detalle in comanda.cabeceraDetalles.all():
         precio_unitario = float(detalle.plato.platoPrecio)
         valor_unitario = precio_unitario / 1.18  # el precio unitario SIN IGV
         cantidad = detalle.detalleCantidad
@@ -99,6 +100,39 @@ def emitirComprobante(pedido, cabecera_id):
         numero = 1
     elif ultimoComprobante is not None:
         numero = ultimoComprobante.comprobanteNumero + 1
-    comprobante_body = {
 
+    cliente_email = pedido['cliente_email']
+    observaciones = pedido['observaciones']
+    comprobante_body = {
+        "operacion": "generar_comprobante",
+        "tipo_de_comprobante": tipo_comprobante,
+        "serie": serie,
+        "numero": numero,
+        "sunat_transaction": 1,
+        "cliente_tipo_de_documento": documento,
+        "cliente_numero_de_documento": cliente_documento,
+        "cliente_denominacion": cliente_denominacion,
+        "cliente_direccion": "",
+        "cliente_email": cliente_email,
+        "fecha_de_emision": datetime.now().strftime("%d-%m-Y"),
+        "moneda": 1,
+        "porcentaje_de_igv": 18.00,
+        "total_gravada": total_gravada,
+        "total_igv": total_igv,
+        "total": total,
+        "detraccion": False,
+        "observaciones": observaciones,
+        "enviar_automaticamente_a_la_sunat": True,
+        "enviar_automaticamente_al_cliente": True,
+        "medio_de_pago": "EFECTIVO",
+        "formato_de_pdf": "TICKET",  # A4, A5, TICKET
+        "items": items
     }
+    url_nubefact = "https://api.nubefact.com/api/v1/db267c95-40d8-4757-9731-588481167020"
+    headers_nubefact = {
+        "Authorization": "3b643f32df9d40f089ff1685774d41206f8b633d814646969d29da362afa527b",
+        "Content-Type": "application/json"
+    }
+    respuestaNubefact = requests.post(
+        url=url_nubefact, json=comprobante_body, headers=headers_nubefact)
+    return respuestaNubefact.json()

@@ -9,6 +9,7 @@ import os
 # nos trae todas las variables que estamos usando en el settings
 from django.conf import settings
 from datetime import date
+from .comprobantes import emitirComprobante
 
 
 class PlatosController(generics.ListCreateAPIView):
@@ -255,7 +256,7 @@ class GenerarComprobantePagoController(generics.CreateAPIView):
         respuesta = self.serializer_class(data=request.data)
         if respuesta.is_valid():
             pedido = self.get_queryset(id_comanda)
-
+            print(emitirComprobante(respuesta.validated_data, id_comanda))
             return Response({
                 'success': True
             })
