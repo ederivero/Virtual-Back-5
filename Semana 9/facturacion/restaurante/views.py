@@ -224,6 +224,43 @@ class NotaPedidoController(generics.CreateAPIView):
 
 
 # TAREA!
-class MostrarMesasMozo(generics.ListAPIView):
+# Devolver todas las mesas de un mozo,
+# mandar el token del mozo y debera retornar todas sus mesas que ha atendido
+# no importa si se repiten las mesas
+# indicar el numero de mesa
+# /mozo/mesas
+# Al menos llegar a la creacion de la vista y mostrar el usuario de la token
+class MostrarMesasMozoController(generics.ListAPIView):
     queryset = PersonalModel.objects.all()
     serializer_class = MostrarMesasMozoSerializer
+    permission_classes = [IsAuthenticated, soloMozos]
+
+    def get(self, request):
+        print(request.user)
+        resultado = self.serializer_class(instance=request.user)
+        return Response({
+            'success': True,
+            'content': resultado.data
+        })
+
+
+class GenerarComprobantePagoController(generics.CreateAPIView):
+    serializer_class = GenerarComprobanteSerializer
+    queryset = CabeceraComandaModel.objects.all()
+
+    def get_queryset(self, id):
+        return self.queryset.filter(id).first()
+
+    def post(self, request, id_comanda):
+        respuesta = self.serializer_class(data=request.data)
+        if respuesta.is_valid():
+            pedido = self.get_queryset(id_comanda)
+
+            return Response({
+                'success': True
+            })
+        else:
+            return Response({
+                'success': False,
+                'content': respuesta.errors
+            })

@@ -211,12 +211,14 @@ class CabeceraComandaModel(models.Model):
         to=PersonalModel,
         on_delete=models.PROTECT,
         db_column='mozo_id',
+        related_name='mozoCabeceras',
         null=False
     )
     mesa = models.ForeignKey(
         to=MesaModel,
         on_delete=models.PROTECT,
         db_column='mesa_id',
+        related_name='mesaCabeceras',
         null=False
     )
     comprobante = models.OneToOneField(

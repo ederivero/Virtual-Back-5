@@ -97,8 +97,33 @@ class MostrarPedidoSerializer(serializers.ModelSerializer):
 # Al menos llegar a la creacion de la vista y mostrar el usuario de la token
 
 
+class CabeceraNotaSerializer(serializers.ModelSerializer):
+    mesa = MesaSerializer()
+
+    class Meta:
+        model = CabeceraComandaModel
+        fields = ['mesa']
+
+
 class MostrarMesasMozoSerializer(serializers.ModelSerializer):
     # ingresar a todas sus comanda cabecera y luego a sus mesas
+    pedidos = CabeceraNotaSerializer(source='mozoCabeceras', many=True)
+
     class Meta:
         model = PersonalModel
         fields = '__all__'
+
+
+class GenerarComprobanteSerializer(serializers.Serializer):
+    #     {
+    #     "tipo_comprobante" : "BOLETA" | "FACTURA",
+    #     "cliente_tipo_documento": "DNI" | "RUC",
+    #     "cliente_documento": "73500715" | "10735007152",
+    #     "cliente_email": "correo@correo.com",
+    #     "observaciones": "otra cosa"
+    # }
+    tipo_comprobante = serializers.ChoiceField(choices=['BOLETA', 'FACTURA'])
+    cliente_tipo_documento = serializers.ChoiceField(choices=['DNI', 'RUC'])
+    cliente_documento = serializers.CharField(max_length=11, min_length=8)
+    cliente_email = serializers.EmailField()
+    observaciones = serializers.CharField(max_length=50)
