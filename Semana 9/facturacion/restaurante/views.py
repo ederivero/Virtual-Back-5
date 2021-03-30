@@ -249,7 +249,7 @@ class GenerarComprobantePagoController(generics.CreateAPIView):
     queryset = CabeceraComandaModel.objects.all()
 
     def get_queryset(self, id):
-        return self.queryset.filter(id).first()
+        return self.queryset.filter(cabeceraId=id).first()
 
     def post(self, request, id_comanda):
         respuesta = self.serializer_class(data=request.data)

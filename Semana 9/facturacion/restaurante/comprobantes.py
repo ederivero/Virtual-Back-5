@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from .models import CabeceraComandaModel, DetalleComandaModel
+from .models import CabeceraComandaModel, ComprobanteModel, DetalleComandaModel
 
 
 def emitirComprobante(pedido, cabecera_id):
@@ -11,6 +11,7 @@ def emitirComprobante(pedido, cabecera_id):
 
     cliente_documento = pedido['cliente_documento']
     cliente_tipo_documento = pedido['cliente_tipo_documento']
+    tipo_comprobante = pedido['tipo_comprobante']
     # buscamos ese pedido para jalar sus datos
     pedido = CabeceraComandaModel.objects.get(cabeceraId=cabecera_id).first()
     # sacamos el total del pedido
@@ -54,3 +55,50 @@ def emitirComprobante(pedido, cabecera_id):
         documento = "-"
         cliente_denominacion = "VARIOS"
         cliente_documento = "VARIOS"
+    # ahora rellenamos el detalle del comprobante
+    # codigo => codigo interno que manejamos nosotros
+    # unidad_de_medida => NIU = PRODUCTOS | ZZ = SERVICIOS
+
+    items = []
+    # me retorna todo el detalle de un pedido
+    for detalle in pedido.cabeceraDetalles.all():
+        precio_unitario = float(detalle.plato.platoPrecio)
+        valor_unitario = precio_unitario / 1.18  # el precio unitario SIN IGV
+        cantidad = detalle.detalleCantidad
+        item = {
+            "unidad_de_medida": "NIU",
+            "codigo": detalle.plato.platoId,
+            "descripcion": detalle.plato.platoDescripcion,
+            "cantidad": cantidad,
+            "valor_unitario": valor_unitario,
+            "precio_unitario": precio_unitario,
+            "subtotal": valor_unitario*cantidad,
+            "tipo_de_igv": 1,
+            "igv": (valor_unitario * cantidad) * 0.18,
+            "total": precio_unitario * cantidad,
+            "anticipo_regularizacion": False
+        }
+        items.append(item)
+    # indicar la serie y numero de comprobante
+    # Las facturas y notas asociadas con ellas empiezan con F
+    # Las boletas y notas asociadas con ellas empiezan con B
+    serie = ""
+    ultimoComprobante = None
+    numero = None
+    if tipo_comprobante == "BOLETA":
+        serie = "B001"
+        # traer el ultimo comprobante que es boleta
+        ultimoComprobante = ComprobanteModel.objects.filter(
+            comprobanteTipo=1).order_by('-comprobanteNumero').first()
+    elif tipo_comprobante == "FACTURA":
+        serie = "F001"
+        # traer el ultimo comprobante que es factura
+        ultimoComprobante = ComprobanteModel.objects.filter(
+            comprobanteTipo=2).order_by('-comprobanteNumero').first()
+    if ultimoComprobante is None:
+        numero = 1
+    elif ultimoComprobante is not None:
+        numero = ultimoComprobante.comprobanteNumero + 1
+    comprobante_body = {
+
+    }

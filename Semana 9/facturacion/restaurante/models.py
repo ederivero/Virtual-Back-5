@@ -156,6 +156,10 @@ class PlatoModel(models.Model):
 
 
 class ComprobanteModel(models.Model):
+    TIPO_COMPROBANTE = [
+        (1, 'BOLETA'),
+        (2, 'FACTURA')
+    ]
     comprobanteId = models.AutoField(
         primary_key=True,
         unique=True,
@@ -164,6 +168,11 @@ class ComprobanteModel(models.Model):
     comprobanteSerie = models.CharField(
         max_length=4,
         db_column='comprobante_serie'
+    )
+    comprobanteTipo = models.IntegerField(
+        choices=TIPO_COMPROBANTE,
+        db_column='comprobante_tipo',
+        null=False
     )
     comprobanteNumero = models.IntegerField(
         db_column='comprobante_numero'
