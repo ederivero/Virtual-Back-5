@@ -131,7 +131,7 @@ class CustomPayloadController(TokenObtainPairView):
 class MesaController(generics.ListCreateAPIView):
     queryset = MesaModel.objects.all()
     serializer_class = MesaSerializer
-    permission_classes = [soloAdministrador]
+    permission_classes = [IsAuthenticated, soloAdministrador]
     # IsAdminUser => valida que el usuario que esta tratando de acceder a cualquiera de los metodos sea is_staff
     # IsAuthenticated => valida que la consulta sea dada por una token valida y correcta
     # IsAuthenticatedOrReadOnly => solamente pedira la token en el caso que no sea un metodo de lectura (get)
