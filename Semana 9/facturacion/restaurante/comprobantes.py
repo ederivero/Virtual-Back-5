@@ -1,3 +1,4 @@
+from re import M
 import requests
 from datetime import datetime
 from .models import CabeceraComandaModel, ComprobanteModel, DetalleComandaModel
@@ -14,7 +15,7 @@ def emitirComprobante(pedido, cabecera_id):
     tipo_comprobante = pedido['tipo_comprobante']
     # buscamos ese pedido para jalar sus datos
     comanda = CabeceraComandaModel.objects.get(cabeceraId=cabecera_id)
-    print(pedido)
+    # print(pedido)
     # sacamos el total del pedido
     total = float(comanda.cabeceraTotal)
     # el valor total sin el IGV
@@ -63,7 +64,8 @@ def emitirComprobante(pedido, cabecera_id):
     items = []
     # me retorna todo el detalle de un pedido
     for detalle in comanda.cabeceraDetalles.all():
-        precio_unitario = float(detalle.plato.platoPrecio)
+        # print(detalle)
+        precio_unitario = float(detalle.detalleSubtotal)
         valor_unitario = precio_unitario / 1.18  # el precio unitario SIN IGV
         cantidad = detalle.detalleCantidad
         item = {
@@ -87,15 +89,17 @@ def emitirComprobante(pedido, cabecera_id):
     ultimoComprobante = None
     numero = None
     if tipo_comprobante == "BOLETA":
-        serie = "B001"
+        tipo_comprobante = 2
+        serie = "BBB1"
         # traer el ultimo comprobante que es boleta
         ultimoComprobante = ComprobanteModel.objects.filter(
-            comprobanteTipo=1).order_by('-comprobanteNumero').first()
+            comprobanteTipo=2).order_by('-comprobanteNumero').first()
     elif tipo_comprobante == "FACTURA":
-        serie = "F001"
+        tipo_comprobante = 1
+        serie = "FFF1"
         # traer el ultimo comprobante que es factura
         ultimoComprobante = ComprobanteModel.objects.filter(
-            comprobanteTipo=2).order_by('-comprobanteNumero').first()
+            comprobanteTipo=1).order_by('-comprobanteNumero').first()
     if ultimoComprobante is None:
         numero = 1
     elif ultimoComprobante is not None:
@@ -114,7 +118,7 @@ def emitirComprobante(pedido, cabecera_id):
         "cliente_denominacion": cliente_denominacion,
         "cliente_direccion": "",
         "cliente_email": cliente_email,
-        "fecha_de_emision": datetime.now().strftime("%d-%m-Y"),
+        "fecha_de_emision": datetime.now().strftime("%d-%m-%Y"),
         "moneda": 1,
         "porcentaje_de_igv": 18.00,
         "total_gravada": total_gravada,
@@ -135,4 +139,21 @@ def emitirComprobante(pedido, cabecera_id):
     }
     respuestaNubefact = requests.post(
         url=url_nubefact, json=comprobante_body, headers=headers_nubefact)
-    return respuestaNubefact.json()
+    # ahora guardamos ese comprobante en nuestra bd
+    json = respuestaNubefact.json()
+    if json.get('errors'):
+        return json
+    else:
+        nuevoComprobante = ComprobanteModel.objects.create(
+            comprobanteSerie=serie,
+            comprobanteNumero=numero,
+            comprobantePdf=json['enlace_del_pdf'],
+            comprobanteCdr=json['enlace_del_cdr'],
+            comprobanteXml=json['enlace_del_xml'],
+            comprobanteRuc=cliente_documento,
+            comprobanteTipo=tipo_comprobante
+        )
+        # actualizamos la fk de nuestra cabecera con el comprobante
+        comanda.comprobante = nuevoComprobante
+        comanda.save()
+        return respuestaNubefact.json()

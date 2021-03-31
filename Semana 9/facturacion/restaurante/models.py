@@ -181,7 +181,8 @@ class ComprobanteModel(models.Model):
         db_column='comprobante_pdf'
     )
     comprobanteCdr = models.URLField(
-        db_column='comprobante_cdr'
+        db_column='comprobante_cdr',
+        null=True
     )
     comprobanteXml = models.URLField(
         db_column='comprobante_xml'

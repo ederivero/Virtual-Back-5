@@ -208,6 +208,10 @@ class NotaPedidoController(generics.CreateAPIView):
                 detallecomanda['cantidad']
             # guardamos ese plato con su cantidad modificada en la bd
             objPlato.save()
+            # actualizar el total de la venta en la cabecera
+            nuevaCabecera.cabeceraTotal = nuevaCabecera.cabeceraTotal + \
+                (detallecomanda['cantidad']*detallecomanda['subtotal'])
+            nuevaCabecera.save()
             # restar la cantidad vendida de los platos
         # inhabilitar la mesa
         # PISTA = ya tengo la nuevaCabecera
@@ -255,10 +259,22 @@ class GenerarComprobantePagoController(generics.CreateAPIView):
     def post(self, request, id_comanda):
         respuesta = self.serializer_class(data=request.data)
         if respuesta.is_valid():
+            # NO PERMITIR LA CREACION DE UN COMPROBANTE SI YA TIENE ESA CABECERA
+            # SI YA EXISTE entonces devolver la coincidencia de la tabla comprobante
+            # CASO CONTRARIO, CREAR EL COMPROBANTE
             pedido = self.get_queryset(id_comanda)
-            print(emitirComprobante(respuesta.validated_data, id_comanda))
+            # PISTASA!! usa el pedido
+            if(pedido.comprobante):
+                return Response({
+                    'success': False,
+                    'content': ComprobanteSerializer(instance=pedido.comprobante).data,
+                    'message': 'Ya existe un comprobante relacionado con esa comanda'
+                })
+            resultadoComprobante = emitirComprobante(
+                respuesta.validated_data, id_comanda)
             return Response({
-                'success': True
+                'success': True,
+                'content': resultadoComprobante
             })
         else:
             return Response({

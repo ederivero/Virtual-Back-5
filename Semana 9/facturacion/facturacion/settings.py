@@ -26,7 +26,7 @@ SECRET_KEY = '4tdh7n(i75+b9noel^=_b8=h8@idsvq#_o(g2_k^ed=yv7u=mv'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['facturacion-django-eduardo.herokuapp.com']
 
 
 # Application definition
@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'facturacion.urls'
@@ -82,10 +83,10 @@ WSGI_APPLICATION = 'facturacion.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'facturacion',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
+        'NAME': 'eqr5vit31wuhxe8r',  # DATABASE
+        'USER': 'jv42m34azibjx9ed',  # USERNAME
+        'PASSWORD': 'x68vued9or6snaco',
+        'HOST': 'pxukqohrckdfo4ty.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
         'PORT': '3306'
     }
 }
@@ -161,3 +162,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1)
 
 }
+
+# para que cuando hagamos py manage.py collectstatic genere todos los assets en la carpeta que le indicamos a continuacion
+STATIC_ROOT = BASE_DIR / 'assets/'

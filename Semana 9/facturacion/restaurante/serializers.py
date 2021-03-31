@@ -127,3 +127,9 @@ class GenerarComprobanteSerializer(serializers.Serializer):
     cliente_documento = serializers.CharField(max_length=11, min_length=8)
     cliente_email = serializers.EmailField()
     observaciones = serializers.CharField(max_length=50)
+
+
+class ComprobanteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ComprobanteModel
+        fields = '__all__'
