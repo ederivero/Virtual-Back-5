@@ -1,18 +1,23 @@
 const { Schema } = require("mongoose");
 const { imagenSchema } = require("./imagen");
 
-const telefonoSchema = new Schema({
-  fono_codigo: {
-    type: Number,
-    min: 1,
-    max: 99,
+const telefonoSchema = new Schema(
+  {
+    fono_codigo: {
+      type: Number,
+      min: 1,
+      max: 99,
+    },
+    fono_numero: {
+      type: String,
+      minlength: 6,
+      maxlength: 10,
+    },
   },
-  fono_numero: {
-    type: String,
-    minlength: 6,
-    maxlength: 10,
-  },
-});
+  {
+    _id: false,
+  }
+);
 
 const usuarioSchema = new Schema(
   {
