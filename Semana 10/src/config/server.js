@@ -1,6 +1,7 @@
 const express = require("express");
 const { json, text } = require("body-parser");
 const mongoose = require("mongoose");
+const curso_router = require("../routes/curso");
 
 module.exports = class Server {
   constructor() {
@@ -34,6 +35,7 @@ module.exports = class Server {
         })
         .end();
     });
+    this.app.use(curso_router);
   }
   async conectarMongoDb() {
     await mongoose

@@ -52,6 +52,8 @@ const cursoSchema = new Schema({
     type: Schema.Types.Decimal128, // se puede usar los tipos de datos nativos de JS o usar los provenientes de Schema.Types.
     min: 0,
   },
+  usuarios: [Schema.Types.ObjectId],
+  comentarios: [Schema.Types.ObjectId],
 });
 
 module.exports = {
