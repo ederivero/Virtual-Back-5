@@ -2,6 +2,7 @@ const express = require("express");
 const { json, text } = require("body-parser");
 const mongoose = require("mongoose");
 const curso_router = require("../routes/curso");
+const usuario_router = require("../routes/usuario");
 
 module.exports = class Server {
   constructor() {
@@ -35,13 +36,14 @@ module.exports = class Server {
         })
         .end();
     });
-    this.app.use(curso_router);
+    this.app.use(curso_router, usuario_router);
   }
   async conectarMongoDb() {
     await mongoose
       .connect("mongodb://localhost:27017/plataforma_educativa", {
         useNewUrlParser: true, // para indicar que estamos usando el nuevo formato de coneccion url
         useUnifiedTopology: true, // para indicar que vamos a usar un nuevo motor de administracion de conecciones, solamente indicar false cuando la conexion sea poco estable
+        useCreateIndex: true, // para indicar que haga la creacion de indices de las collecciones de la bd
         // para ver que otras opciones se pueden asignar => https://mongoosejs.com/docs/connections.html#options
       })
       .catch((e) => console.error(e));

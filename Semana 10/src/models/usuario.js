@@ -1,4 +1,5 @@
 const { Schema } = require("mongoose");
+const { hashSync } = require("bcrypt");
 const { imagenSchema } = require("./imagen");
 
 const telefonoSchema = new Schema(
@@ -33,10 +34,10 @@ const usuarioSchema = new Schema(
     usuario_email: {
       type: String,
       maxlength: 50,
-      minlength: 25,
+      minlength: 10,
       unique: true,
     },
-    usuario_hash: String,
+    usuario_password: String,
     usuario_categoria: {
       type: Number,
       min: 1,
@@ -55,6 +56,10 @@ const usuarioSchema = new Schema(
     },
   }
 );
+
+usuarioSchema.methods.encriptarPassword = function (password) {
+  this.usuario_password = hashSync(password, 10);
+};
 
 module.exports = {
   usuarioSchema,
