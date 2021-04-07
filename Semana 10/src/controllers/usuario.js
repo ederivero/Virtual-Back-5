@@ -139,7 +139,9 @@ const editarUsuario = async (req, res) => {
     })
   );
   if (link) {
-    req.body.usuario_imagen = { imagen_url: link };
+    if (req.body.usuario_password) delete req.body.usuario_password;
+    console.log(req.body);
+    req.body.usuario_imagen = { imagen_url: link[0] };
     const usuarioActualizado = await Usuario.findByIdAndUpdate(
       usuario_id,
       req.body,

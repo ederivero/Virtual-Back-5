@@ -51,6 +51,7 @@ module.exports = class Server {
         useNewUrlParser: true, // para indicar que estamos usando el nuevo formato de coneccion url
         useUnifiedTopology: true, // para indicar que vamos a usar un nuevo motor de administracion de conecciones, solamente indicar false cuando la conexion sea poco estable
         useCreateIndex: true, // para indicar que haga la creacion de indices de las collecciones de la bd
+        useFindAndModify: false, // sirve para indicar que los metodos findOneAndUpdate y findOneAndDelete no se usaran porque ya son deprecados (obsoletos)
         // para ver que otras opciones se pueden asignar => https://mongoosejs.com/docs/connections.html#options
       })
       .catch((e) => console.error(e));

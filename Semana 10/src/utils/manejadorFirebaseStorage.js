@@ -12,7 +12,7 @@ const bucket = storage.bucket("prueba-firebase-eduardo.appspot.com");
 const subirArchivo = (archivo) => {
   return new Promise((resolve, reject) => {
     // validamos que tengamos un archivo si es que no hay hacemos un rechazo
-    if (!archivo) reject("No se encontro el archivo");
+    if (!archivo) return reject("No se encontro el archivo");
     // comenzamos a cargar el archivo mediante su nombre
     const fileUpload = bucket.file(archivo.originalname);
     // agregamos configuracion adicional de nuestro archivo a subir como x ejemplo su metadata
