@@ -41,4 +41,15 @@ const subirArchivo = (archivo) => {
   });
 };
 
-module.exports = { subirArchivo };
+const eliminarArchivo = async (nombreArchivo) => {
+  try {
+    const rpta = await bucket.file(nombreArchivo).delete();
+    console.log(rpta);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+module.exports = { subirArchivo, eliminarArchivo };

@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const curso_router = require("../routes/curso");
 const usuario_router = require("../routes/usuario");
 const comentario_router = require("../routes/comentario");
+const imagen_router = require("../routes/imagen");
 
 module.exports = class Server {
   constructor() {
@@ -37,7 +38,12 @@ module.exports = class Server {
         })
         .end();
     });
-    this.app.use(curso_router, usuario_router);
+    this.app.use(
+      curso_router,
+      usuario_router,
+      imagen_router,
+      comentario_router
+    );
   }
   async conectarMongoDb() {
     await mongoose

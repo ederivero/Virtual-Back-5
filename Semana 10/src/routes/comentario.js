@@ -6,4 +6,4 @@ const comentario_router = Router();
 
 //...
 
-module.exports = comentario_controller;
+module.exports = comentario_router;
