@@ -140,7 +140,6 @@ const editarUsuario = async (req, res) => {
   );
   if (link) {
     if (req.body.usuario_password) delete req.body.usuario_password;
-    console.log(req.body);
     req.body.usuario_imagen = { imagen_url: link[0] };
     const usuarioActualizado = await Usuario.findByIdAndUpdate(
       usuario_id,
@@ -154,6 +153,16 @@ const editarUsuario = async (req, res) => {
     });
   }
 };
+
+const cambiarPassword = async (req, res) => {
+  const { usuario_id } = req.usuario;
+  const { newPassword, oldPassword } = req.body;
+  // validar si la oldPassword es la contraseña actual
+  // si lo es, cambiar la contraseña (encriptacion)
+  // si no lo es, indicar que no se pudo cambiar la password
+};
+
+const resetPassword = async (req, res) => {};
 
 module.exports = {
   registro,
