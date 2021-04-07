@@ -3,6 +3,7 @@ const { json, text } = require("body-parser");
 const mongoose = require("mongoose");
 const curso_router = require("../routes/curso");
 const usuario_router = require("../routes/usuario");
+const comentario_router = require("../routes/comentario");
 
 module.exports = class Server {
   constructor() {

@@ -58,9 +58,9 @@ const inscribirCurso = async (req, res) => {
    * 3. ver si el usuario ya esta inscrito en el curso y si lo esta no permitir volver a inscribirlo
    * 4. si no esta inscrito, inscribirlo
    */
-  const { id } = req.query;
+  const curso_id = req.query.id;
   const { usuario_id } = req.usuario;
-  const cursoEncontrado = await Curso.findById(id).catch((error) => {
+  const cursoEncontrado = await Curso.findById(curso_id).catch((error) => {
     res.status(404).json({
       success: false,
       content: error,
@@ -68,22 +68,68 @@ const inscribirCurso = async (req, res) => {
     });
   });
   if (cursoEncontrado) {
-    const { cursos } = await Usuario.findById(usuario_id);
-    for (const key in cursos) {
-      if (cursos[key] === id) {
-        return res.json({
-          success: false,
-          content: null,
-          message: "Usuario ya se encuentra registrado en el curso",
-        });
-      }
+    const usuarioEncontrado = await Usuario.findById(usuario_id);
+    const resultado = usuarioEncontrado.cursos.includes(curso_id);
+    if (resultado && cursoEncontrado.usuarios.includes(usuario_id)) {
+      return res.status(401).json({
+        success: false,
+        content: null,
+        message: "Curso ya se encuentra registrado en el Usuario",
+      });
     }
-    // ingresar el curso al usuario
-    res.send("ok");
+    usuarioEncontrado.cursos.push(curso_id);
+    usuarioEncontrado.save();
+
+    // ahora ingresar ese usuario en el schema cursos => usuarios:[]
+    cursoEncontrado.usuarios.push(usuario_id);
+    cursoEncontrado.save();
+
+    return res.status(201).json({
+      success: true,
+      content: usuarioEncontrado,
+      message: "Usuario enrolado exitosamente",
+    });
   }
 };
+
+// mostrar los cursos del usuario
+// nombre, descripcion, link, imagenes
+const mostrarCursosUsuario = async (req, res) => {
+  const { usuario_id } = req.usuario;
+  // iterar los cursos del usuario y buscarlos en la coleccion de cursos
+  const { cursos } = await Usuario.findById(usuario_id);
+  console.log(cursos);
+  let resultado = [];
+  let resultado2;
+  // 1ra forma
+  resultado2 = await Promise.all(
+    cursos.map((curso) =>
+      Curso.findById(
+        curso,
+        "curso_nombre curso_descripcion curso_link curso_imagenes"
+      )
+    )
+  );
+  console.log(resultado2);
+  // 2da forma
+  for (const key in cursos) {
+    resultado.push(
+      await Curso.findById(
+        cursos[key],
+        "curso_nombre curso_descripcion curso_link curso_imagenes"
+      )
+    );
+  }
+  return res.json({
+    success: true,
+    content: resultado2,
+    message: null,
+  });
+};
+
 module.exports = {
   registro,
   login,
   inscribirCurso,
+  mostrarCursosUsuario,
 };
