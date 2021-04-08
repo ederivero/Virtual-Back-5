@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { AES } = require("crypto-js");
+const { AES, enc } = require("crypto-js");
 const { enviarCorreo } = require("../utils/manejadorCorreo");
 const { Usuario, Curso } = require("../config/mongoose");
 const { subirArchivo } = require("../utils/manejadorFirebaseStorage");
@@ -218,6 +218,65 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const consultarHash = async (req, res) => {
+  // validar si el hash existe
+  const { hash } = req.query;
+  const usuarioEncontrado = await Usuario.where({
+    usuario_password_recovery: hash,
+  });
+  if (!usuarioEncontrado) {
+    return res.status(404).json({
+      success: false,
+      content: null,
+      message: "hash incorrecto",
+    });
+  }
+  // ahora desencriptamos el hash
+  const bytes = AES.decrypt(hash, process.env.PASSWORD);
+  const horaOriginal = +bytes.toString(enc.Utf8);
+  console.log("Hora original", new Date(horaOriginal).toUTCString());
+  const horaActual = new Date().setHours(0);
+
+  console.log("Hora final", new Date(horaActual).toUTCString());
+  if (horaActual < horaOriginal) {
+    console.log("aun hay tiempo");
+    return res.json({
+      success: true,
+      content: new Date(horaOriginal).toTimeString(),
+      message: "Aun hay tiempo",
+    });
+  } else {
+    console.log("ya no hay tiempo");
+    return res.json({
+      success: false,
+      content: false,
+      message: "Ya no hay tiempo",
+    });
+  }
+};
+
+const changePassword = async (req, res) => {
+  const { hash, newPassword } = req.body;
+  const usuarioEncontrado = await Usuario.findOne({
+    usuario_password_recovery: hash,
+  });
+  // si no hay un usuario retornaremos false
+  if (!usuarioEncontrado) {
+    return res.status(500).json({
+      success: false,
+    });
+  }
+  // encriptamos la contraseña
+  usuarioEncontrado.encriptarPassword(newPassword);
+  // ahora para evitar que se pueda volver a utilizar n veces el hash lo eliminamos
+  usuarioEncontrado.usuario_password_recovery = "";
+  // guardamos el usuario editaro
+  usuarioEncontrado.save();
+  return res.json({
+    success: true,
+  });
+};
+
 module.exports = {
   registro,
   login,
@@ -226,4 +285,6 @@ module.exports = {
   editarUsuario,
   cambiarPassword,
   resetPassword,
+  consultarHash,
+  changePassword,
 };
