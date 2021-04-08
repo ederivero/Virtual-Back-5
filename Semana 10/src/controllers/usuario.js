@@ -198,21 +198,17 @@ const resetPassword = async (req, res) => {
     usuarioEncontrado.usuario_password_recovery = hash;
     await usuarioEncontrado.save();
     const cuerpo = `Hola ${usuarioEncontrado.usuario_nombre} has solicitado el cambio de tu password, tu hash es ${hash}`;
-    enviarCorreo(usuarioEncontrado.usuario_email, "Resetear password", cuerpo)
-      .then((resultado) =>
-        res.status(201).json({
-          success: true,
-          content: resultado,
-          message: "Correo enviado exitosamente",
-        })
-      )
-      .catch((error) =>
-        res.status(500).json({
-          success: false,
-          content: error,
-          message: "Error",
-        })
-      );
+    const resultado = await enviarCorreo(
+      usuarioEncontrado.usuario_email,
+      "Resetear password",
+      cuerpo
+    );
+
+    return res.status(201).json({
+      success: true,
+      content: resultado,
+      message: "Correo enviado exitosamente",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
