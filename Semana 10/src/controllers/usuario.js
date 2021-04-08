@@ -1,3 +1,6 @@
+require("dotenv").config();
+const { AES } = require("crypto-js");
+const { enviarCorreo } = require("../utils/manejadorCorreo");
 const { Usuario, Curso } = require("../config/mongoose");
 const { subirArchivo } = require("../utils/manejadorFirebaseStorage");
 
@@ -157,12 +160,67 @@ const editarUsuario = async (req, res) => {
 const cambiarPassword = async (req, res) => {
   const { usuario_id } = req.usuario;
   const { newPassword, oldPassword } = req.body;
+  const usuarioEncontrado = await Usuario.findById(usuario_id);
+  const resultado = usuarioEncontrado.validarPassword(oldPassword);
+  if (!resultado) {
+    return res.status(400).json({
+      success: false,
+      content: null,
+      message: "Contraseña invalida",
+    });
+  } else {
+    usuarioEncontrado.encriptarPassword(newPassword);
+    await usuarioEncontrado.save();
+    return res.status(200).json({
+      success: true,
+      content: usuarioEncontrado,
+      message: "Contraseña actualizada exitosamente",
+    });
+  }
   // validar si la oldPassword es la contraseña actual
   // si lo es, cambiar la contraseña (encriptacion)
   // si no lo es, indicar que no se pudo cambiar la password
 };
 
-const resetPassword = async (req, res) => {};
+const resetPassword = async (req, res) => {
+  const fechaVencimiento = new Date().setHours(1).toString();
+  const hash = AES.encrypt(fechaVencimiento, process.env.PASSWORD);
+  const { email } = req.body;
+  try {
+    const usuarioEncontrado = await Usuario.findOne({ usuario_email: email });
+    if (!usuarioEncontrado) {
+      return res.status(404).json({
+        success: false,
+        content: null,
+        message: "Usuario no encontrado",
+      });
+    }
+    usuarioEncontrado.usuario_password_recovery = hash;
+    await usuarioEncontrado.save();
+    const cuerpo = `Hola ${usuarioEncontrado.usuario_nombre} has solicitado el cambio de tu password, tu hash es ${hash}`;
+    enviarCorreo(usuarioEncontrado.usuario_email, "Resetear password", cuerpo)
+      .then((resultado) =>
+        res.status(201).json({
+          success: true,
+          content: resultado,
+          message: "Correo enviado exitosamente",
+        })
+      )
+      .catch((error) =>
+        res.status(500).json({
+          success: false,
+          content: error,
+          message: "Error",
+        })
+      );
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      content: error,
+      message: "Error",
+    });
+  }
+};
 
 module.exports = {
   registro,
@@ -170,4 +228,6 @@ module.exports = {
   inscribirCurso,
   mostrarCursosUsuario,
   editarUsuario,
+  cambiarPassword,
+  resetPassword,
 };

@@ -26,5 +26,11 @@ usuario_router.put(
   multer.single("imagen"),
   usuario_controller.editarUsuario
 );
+usuario_router.post(
+  "/cambiar-password",
+  wachiman,
+  usuario_controller.cambiarPassword
+);
+usuario_router.post("/reset-password", usuario_controller.resetPassword);
 
 module.exports = usuario_router;

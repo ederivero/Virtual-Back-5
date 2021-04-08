@@ -45,6 +45,10 @@ const usuarioSchema = new Schema(
       min: 1,
       max: 4,
     },
+    usuario_password_recovery: {
+      type: String,
+      required: false,
+    },
     usuario_telefono: [telefonoSchema],
     usuario_imagen: imagenSchema,
     cursos: [Schema.Types.ObjectId],
