@@ -9,4 +9,20 @@ const listaMensaje = document.getElementById("lista-mensajes");
 socket.on("connect", () => {
   console.log("conectado");
 });
-// el metodo emit sirve para recibir lo que el back nos esta mandando
+// el metodo emit sirve para enviar algo al back mediante el nombre de su socket
+ingresar.addEventListener("click", (e) => {
+  e.preventDefault();
+  socket.emit("configurar-cliente", nombre.value);
+  ingresar.disabled = true;
+  nombre.disabled = true;
+});
+socket.on("lista-usuarios", (usuarios) => {
+  console.log(usuarios);
+  listaUsuarios.innerHTML = "";
+  for (const key in usuarios) {
+    const usuarioLi = document.createElement("li");
+    usuarioLi.className = "list-group-item";
+    usuarioLi.innerText = usuarios[key].nombre;
+    listaUsuarios.appendChild(usuarioLi);
+  }
+});
