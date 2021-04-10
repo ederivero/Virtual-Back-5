@@ -21,4 +21,9 @@ function mouseDragged() {
 const enviarPunto = (posX, posY) => {
   console.log(`Posicion x: ${posX}`);
   console.log(`Posicion Y: ${posY}`);
+  const data = {
+    x: posX,
+    y: posY,
+  };
+  socket.emit("coordenada", data);
 };
