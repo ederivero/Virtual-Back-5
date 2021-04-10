@@ -12,9 +12,22 @@ socket.on("connect", () => {
 // el metodo emit sirve para enviar algo al back mediante el nombre de su socket
 ingresar.addEventListener("click", (e) => {
   e.preventDefault();
-  socket.emit("configurar-cliente", nombre.value);
-  ingresar.disabled = true;
-  nombre.disabled = true;
+  const classbtn = ingresar.classList;
+  if (classbtn.contains("btn-danger")) {
+    // si hay la class btn-danger en el boton entonces se desconectar el cliente
+    socket.disconnect().connect();
+    // el metodo socket.disconnect().connect(); sirve para hacer un hard reset del client del socket (expulsa al cliente y automaticamente se intenta reconectar nuevamente)
+    ingresar.innerText = "Ingresar al chat";
+    ingresar.className = "btn btn-block btn-success";
+    nombre.value = "";
+    nombre.disabled = false;
+  } else {
+    socket.emit("configurar-cliente", nombre.value);
+    ingresar.innerText = "Salir del chat";
+    ingresar.className = "btn btn-block btn-danger";
+    // ingresar.disabled = true;
+    nombre.disabled = true;
+  }
 });
 socket.on("lista-usuarios", (usuarios) => {
   console.log(usuarios);
