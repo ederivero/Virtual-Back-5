@@ -20,6 +20,7 @@ export default class ServidorSocket {
     let usuarios = [];
     const mensajes = [];
     this.io.on("connect", (cliente) => {
+      this.io.emit("lista-usuarios", usuarios);
       // console.log(cliente);
       console.log(`Se conecto el cliente ${cliente.id}`);
       cliente.on("disconnect", (motivo) => {
@@ -41,6 +42,20 @@ export default class ServidorSocket {
           nombre,
         });
         this.io.emit("lista-usuarios", usuarios);
+      });
+
+      cliente.on("mensaje", (mensaje) => {
+        const usuario = usuarios.filter(
+          (usuario) => usuario.id === cliente.id
+        )[0];
+        mensajes.push({
+          cliente: usuario.nombre,
+          mensaje,
+        });
+        // si nosotros queremos emitir al mismo cliente que se ha conectado usaremos su metodo cliente,emit()
+        // si queremos emitir a todos los demas EXCEPTO a la persona que ha enviado el evento que desencana el emit usuremos cliente.broadcast.emit()
+        // si queremos emitir a todos los usuario conectados al socket usaremos el objeto del socket this.io.emit() NOTA=> en el objeto this.io no existe el metodo broadcast()
+        this.io.emit("lista-mensajes", mensajes);
       });
     });
   }

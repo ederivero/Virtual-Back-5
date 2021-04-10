@@ -26,3 +26,21 @@ socket.on("lista-usuarios", (usuarios) => {
     listaUsuarios.appendChild(usuarioLi);
   }
 });
+
+mensaje.addEventListener("keyup", (e) => {
+  // console.log(e.key);
+  if (e.key === "Enter") {
+    socket.emit("mensaje", mensaje.value);
+    mensaje.value = "";
+  }
+});
+
+socket.on("lista-mensajes", (mensajes) => {
+  listaMensaje.innerHTML = "";
+  mensajes.forEach((mensaje) => {
+    const mensajeLi = document.createElement("li");
+    mensajeLi.className = "list-group-item";
+    mensajeLi.innerText = `${mensaje.cliente} dice: ${mensaje.mensaje}`;
+    listaMensaje.appendChild(mensajeLi);
+  });
+});
